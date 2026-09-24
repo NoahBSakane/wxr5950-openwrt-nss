@@ -1,0 +1,17 @@
+# Web管理画面
+luci
+
+# WireGuard VPN
+kmod-wireguard
+wireguard-tools
+luci-proto-wireguard
+
+# NAT-PMPクライアント・Tailscale VPN
+natpmpc
+tailscale
+
+# 性能測定・監視・ネットワーク診断
+iperf3
+htop
+tcpdump-mini
+ethtool
