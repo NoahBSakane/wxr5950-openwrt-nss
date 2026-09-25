@@ -6,7 +6,7 @@ on:
       ref:
         description: 'qosmio/openwrt-ipq branch, tag, or full commit SHA'
         required: true
-        default: '24.10-nss'
+        default: '25.12-nss'
         type: string
 
 permissions:

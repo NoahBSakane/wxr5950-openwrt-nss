@@ -1,13 +1,13 @@
 # WXR-5950AX12 OpenWrt NSS ビルド
 
-Buffalo WXR-5950AX12 専用のファームウェアを、[qosmio/openwrt-ipq の 24.10-nss](https://github.com/qosmio/openwrt-ipq/tree/24.10-nss) を基に GitHub Actions（Ubuntu 24.04）でビルドします。NSS seed 設定を使い、ほかの機種を無効化し、指定パッケージが `make defconfig` 後もすべて組み込まれていることを検証します。依存パッケージは [OpenWrt公式のビルド環境設定](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem) を参照しています。
+Buffalo WXR-5950AX12 専用のファームウェアを、[qosmio/openwrt-ipq の 25.12-nss](https://github.com/qosmio/openwrt-ipq/tree/25.12-nss) を基に GitHub Actions（Ubuntu 24.04）でビルドします。`24.10-nss` は本家のカーネル更新(6.6.141)に NSS パッチ `0600-4-qca-nss-ecm-support-net-bonding-over-LAG-interface.patch` が追従しておらずビルドできないため、カーネル 6.12.91 と NSS パッチの版数が揃った `25.12-nss` を既定にしています。NSS seed 設定を使い、ほかの機種を無効化し、指定パッケージが `make defconfig` 後もすべて組み込まれていることを検証します。依存パッケージは [OpenWrt公式のビルド環境設定](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem) を参照しています。
 
 ## ビルド方法
 
 この一式をGitHubリポジトリのデフォルトブランチへ配置し、Actionsを有効にした状態で実行します。ローカルのみの状態では実行できません。ワークフロー用の秘密情報の登録は不要です。GitHub CLIは対象リポジトリで認証済みの状態を前提とします。
 
 ```sh
-gh workflow run build.yml -f ref=24.10-nss
+gh workflow run build.yml -f ref=25.12-nss
 gh run list --workflow build.yml
 gh run watch <RUN_ID>
 gh run download <RUN_ID> --dir artifacts
@@ -34,4 +34,4 @@ Actions画面の「Run workflow」からも実行できます。`ref` にはフ�
 
 ## NSS利用時の注意
 
-[フォークの注意事項](https://github.com/qosmio/openwrt-ipq/tree/24.10-nss#important-note) に従い、標準のsoftware/hardware flow offloadingとpacket steeringを無効にしてください。既存設定を引き継ぐ場合も確認が必要です。ブリッジVLANフィルタリング（DSA形式の `config bridge-vlan`）はNSS Wi-Fiオフロード非対応です。このワークフローは実機の設定変更やファームウェア書き込みを行いません。
+[フォークの注意事項](https://github.com/qosmio/openwrt-ipq/tree/25.12-nss#important-note) に従い、標準のsoftware/hardware flow offloadingとpacket steeringを無効にしてください。既存設定を引き継ぐ場合も確認が必要です。ブリッジVLANフィルタリング（DSA形式の `config bridge-vlan`）はNSS Wi-Fiオフロード非対応です。このワークフローは実機の設定変更やファームウェア書き込みを行いません。
