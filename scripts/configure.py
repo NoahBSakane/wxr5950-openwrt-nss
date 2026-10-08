@@ -99,7 +99,11 @@ def verify(config, required):
     failures = []
     for symbol, value in read_config(required).items():
         resolved = actual.get(symbol, "n")
-        if resolved != value:
+        if value == "m" and resolved == "y":
+            # Another package or the builder config selects it, so it is in the
+            # image and its APK is still built: the request is satisfied.
+            print(f"Notice: {symbol}=m resolved to y (selected by a dependency or the builder)")
+        elif resolved != value:
             failures.append(f"Required configuration missing: {symbol}={value} (resolved: {resolved})")
     for symbol, value in actual.items():
         if DEVICE_SYMBOL.fullmatch(symbol) and value in ("y", "m") and symbol != DEVICE:

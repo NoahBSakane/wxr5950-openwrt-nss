@@ -82,7 +82,23 @@ class ConfigurationTests(unittest.TestCase):
         with self.assertRaises(ValueError) as caught:
             configure.verify(self.config, self.required)
         self.assertIn("CONFIG_PACKAGE_luci=y", str(caught.exception))
-        self.assertIn("CONFIG_PACKAGE_mdns-repeater=m", str(caught.exception))
+        # m -> y is accepted: the package is still built and is in the image.
+        self.assertNotIn("CONFIG_PACKAGE_mdns-repeater=m", str(caught.exception))
+
+    def test_module_promoted_to_builtin_is_accepted(self):
+        self.prepare()
+        values = configure.read_config(self.config)
+        values["CONFIG_PACKAGE_mdns-repeater"] = "y"
+        configure.write_config(self.config, values)
+        configure.verify(self.config, self.required)
+
+    def test_module_dropped_is_rejected(self):
+        self.prepare()
+        values = configure.read_config(self.config)
+        values["CONFIG_PACKAGE_mdns-repeater"] = "n"
+        configure.write_config(self.config, values)
+        with self.assertRaises(ValueError):
+            configure.verify(self.config, self.required)
 
     def test_unexpected_devices_in_both_symbol_forms(self):
         self.prepare()
