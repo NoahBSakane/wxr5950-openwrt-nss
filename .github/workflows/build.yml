@@ -1,12 +1,17 @@
-name: Build WXR-5950AX12 NSS
+name: Build WXR-5950AX12 NSS EDMA
 
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'qosmio/openwrt-ipq branch, tag, or full commit SHA'
+        description: 'JuliusBairaktaris/openwrt-nss-edma branch, tag, or full 40-digit commit SHA'
         required: true
-        default: '25.12-nss'
+        default: 'nss-edma-rework'
+        type: string
+      builder_ref:
+        description: 'JuliusBairaktaris/Qualcommax_NSS_Builder branch, tag, or full 40-digit commit SHA'
+        required: true
+        default: '016581e7911a7bf273b4fc072fc5d133d13a5409'
         type: string
 
 permissions:
@@ -52,91 +57,62 @@ jobs:
           set -euo pipefail
           # init + shallow fetch also supports full commit SHAs, unlike clone --branch.
           git init openwrt
-          git -C openwrt remote add origin https://github.com/qosmio/openwrt-ipq.git
-          git -C openwrt fetch --depth=1 --no-tags origin "$FORK_REF"
+          git -C openwrt remote add origin https://github.com/JuliusBairaktaris/openwrt-nss-edma.git
+          git -C openwrt fetch --depth=1 --no-tags origin -- "$FORK_REF"
           git -C openwrt checkout --detach FETCH_HEAD
           sha="$(git -C openwrt rev-parse HEAD)"
           short_sha="${sha:0:12}"
           printf 'sha=%s\nshort_sha=%s\n' "$sha" "$short_sha" >> "$GITHUB_OUTPUT"
           printf '%s\n' "$sha" > openwrt/fork-commit.txt
+          # shellcheck disable=SC2016 # Literal Markdown backticks in summary text.
           printf '### OpenWrt fork revision\n\nCommit: `%s`\n' "$sha" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Update and install feeds
-        working-directory: openwrt
+      - name: Fetch requested builder revision
+        id: builder
+        env:
+          BUILDER_REF: ${{ inputs.builder_ref }}
         run: |
           set -euo pipefail
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+          git init builder
+          git -C builder remote add origin https://github.com/JuliusBairaktaris/Qualcommax_NSS_Builder.git
+          git -C builder fetch --depth=1 --no-tags origin -- "$BUILDER_REF"
+          git -C builder checkout --detach FETCH_HEAD
+          sha="$(git -C builder rev-parse HEAD)"
+          printf 'sha=%s\nshort_sha=%s\n' "$sha" "${sha:0:12}" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$sha" > openwrt/builder-commit.txt
+          # shellcheck disable=SC2016 # Literal Markdown backticks in summary text.
+          printf '\n### Builder revision\n\nCommit: `%s`\n' "$sha" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Select device and packages
-        working-directory: openwrt
+      - name: Prepare feeds, patches, device and packages
+        env:
+          OPENWRT_DIR: ${{ github.workspace }}/openwrt
+          BUILDER_REPO: ${{ github.workspace }}/builder
+          REQUIRED_CONFIG: ${{ runner.temp }}/required-config.txt
         run: |
           set -euo pipefail
-          cp nss-setup/config-nss.seed .config
-          python3 - <<'PY'
-          import os
-          import re
-          from pathlib import Path
-
-          device = "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_buffalo_wxr-5950ax12"
-          packages = []
-          for number, raw in enumerate(Path("../config/packages.txt").read_text().splitlines(), 1):
-              name = raw.split("#", 1)[0].strip()
-              if not name:
-                  continue
-              if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9+_.-]*", name):
-                  raise SystemExit(f"Invalid package on line {number}: {name!r}")
-              packages.append(f"CONFIG_PACKAGE_{name}")
-          required = list(dict.fromkeys([device, *packages]))
-          # The seed enables tcpdump; tcpdump-mini installs the same executable.
-          disabled = {"CONFIG_PACKAGE_tcpdump"} if "CONFIG_PACKAGE_tcpdump-mini" in packages else set()
-          if disabled.intersection(packages):
-              raise SystemExit("Choose only one of tcpdump and tcpdump-mini")
-          lines = []
-          for line in Path(".config").read_text().splitlines():
-              symbol = line.removeprefix("# ").split("=", 1)[0].split(" ", 1)[0]
-              if symbol in required:
-                  continue
-              if symbol in disabled:
-                  continue
-              if re.fullmatch(r"CONFIG_TARGET_.*_DEVICE_.*=y", line):
-                  line = f"# {symbol} is not set"
-              lines.append(line)
-          lines.extend(f"# {symbol} is not set" for symbol in sorted(disabled))
-          lines.extend(f"{symbol}=y" for symbol in required)
-          Path(".config").write_text("\n".join(lines) + "\n")
-          (Path(os.environ["RUNNER_TEMP"]) / "required-symbols.txt").write_text(
-              "\n".join(required) + "\n"
-          )
-          PY
-          make defconfig
+          bash scripts/prepare-build.sh
 
       - name: Verify resolved configuration
         working-directory: openwrt
         run: |
           set -euo pipefail
-          missing=0
-          while IFS= read -r symbol; do
-            if ! grep -Fxq -- "${symbol}=y" .config; then
-              printf 'Required configuration missing: %s=y\n' "$symbol" >&2
-              missing=1
-            fi
-          done < "$RUNNER_TEMP/required-symbols.txt"
-          while IFS= read -r line; do
-            if [[ "$line" != 'CONFIG_TARGET_qualcommax_ipq807x_DEVICE_buffalo_wxr-5950ax12=y' ]]; then
-              printf 'Unexpected device enabled: %s\n' "$line" >&2
-              missing=1
-            fi
-          done < <(grep -E '^CONFIG_TARGET_.*_DEVICE_.*=y$' .config || true)
-          if (( missing != 0 )); then
-            exit 1
-          fi
+          python3 ../scripts/configure.py verify \
+            --config .config --required "$RUNNER_TEMP/required-config.txt"
+
+      - name: Set reproducible-build environment
+        working-directory: openwrt
+        run: |
+          set -euo pipefail
+          {
+            printf 'SOURCE_DATE_EPOCH=%s\n' "$(git show -s --format=%ct HEAD)"
+            printf 'TZ=UTC\nLC_ALL=C\nKBUILD_BUILD_USER=builder\nKBUILD_BUILD_HOST=github\n'
+          } >> "$GITHUB_ENV"
 
       - name: Cache source downloads
         uses: actions/cache@v4
         with:
           path: openwrt/dl
-          key: ${{ runner.os }}-openwrt-dl-${{ steps.source.outputs.sha }}-${{ hashFiles('config/packages.txt') }}
+          key: ${{ runner.os }}-openwrt-dl-${{ steps.source.outputs.sha }}-${{ steps.builder.outputs.sha }}-${{ hashFiles('config/packages.txt', 'scripts/**') }}
           restore-keys: |
             ${{ runner.os }}-openwrt-dl-${{ steps.source.outputs.sha }}-
             ${{ runner.os }}-openwrt-dl-
@@ -153,15 +129,16 @@ jobs:
           set -euo pipefail
           make -j"$(nproc)" || make -j1 V=s
 
-      - name: Collect firmware and build metadata
+      - name: Collect firmware, APK packages and build metadata
         run: |
           set -euo pipefail
           target_dir="openwrt/bin/targets/qualcommax/ipq807x"
           mkdir -p artifacts
           shopt -s nullglob
           firmware=("$target_dir"/*buffalo_wxr-5950ax12*)
+          images=("$target_dir"/*buffalo_wxr-5950ax12*sysupgrade.bin)
           manifests=("$target_dir"/*.manifest)
-          if (( ${#firmware[@]} == 0 || ${#manifests[@]} == 0 )); then
+          if (( ${#images[@]} == 0 || ${#manifests[@]} == 0 )); then
             printf 'Firmware or manifest is missing in %s\n' "$target_dir" >&2
             exit 1
           fi
@@ -170,12 +147,30 @@ jobs:
           for metadata in sha256sums config.buildinfo feeds.buildinfo version.buildinfo; do
             cp -- "$target_dir/$metadata" artifacts/
           done
-          cp -- openwrt/fork-commit.txt artifacts/
+          cp -- openwrt/fork-commit.txt openwrt/builder-commit.txt artifacts/
+          cp -- config/packages.txt artifacts/
+          # Keep repository paths: target kmods and feed packages can share names.
+          # Include all generated APKs, including =m packages and their dependencies.
+          apk_count=0
+          while IFS= read -r -d '' source; do
+            relative="${source#openwrt/bin/}"
+            destination="artifacts/packages/$relative"
+            mkdir -p -- "$(dirname -- "$destination")"
+            cp -L -- "$source" "$destination"
+            if [[ "$source" == *.apk ]]; then
+              apk_count=$((apk_count + 1))
+            fi
+          done < <(find openwrt/bin -type f \( -name '*.apk' -o -name 'packages.adb' \
+            -o -name 'index.json' -o -name 'APKINDEX.tar.gz' \) -print0)
+          if (( apk_count == 0 )); then
+            printf 'No APK packages found in openwrt/bin\n' >&2
+            exit 1
+          fi
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: wxr-5950ax12-nss-${{ steps.source.outputs.short_sha }}
+          name: wxr-5950ax12-nss-edma-${{ steps.source.outputs.short_sha }}-${{ steps.builder.outputs.short_sha }}
           path: artifacts/
           if-no-files-found: error
           retention-days: 30

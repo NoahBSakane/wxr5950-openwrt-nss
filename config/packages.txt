@@ -9,9 +9,39 @@ luci-proto-wireguard
 # NAT-PMPクライアント・Tailscale VPN
 natpmpc
 tailscale
+kmod-tun
 
 # 性能測定・監視・ネットワーク診断
 iperf3
 htop
 tcpdump-mini
 ethtool
+
+# 広告ブロック・Web管理画面
+adblock-fast
+luci-app-adblock-fast
+
+# 遠隔起動(Wake-on-LAN)
+etherwake
+luci-app-wol
+
+# 通知(ポートのずれなど)・HTTPS通信用
+curl
+ca-bundle
+
+# 接続追跡の確認・回線とDNSの診断
+conntrack
+mtr-nojson
+bind-dig
+
+# CPU・メモリ・帯域などの推移(collectd・rrdtoolを含む)
+luci-app-statistics
+
+# イメージに組み込まず、追加インストール用パッケージだけ作る
+miniupnpd-nftables=m
+mdns-repeater=m
+# 測ってから入れるかを決めるもの
+sqm-scripts=m
+luci-app-sqm=m
+nlbwmon=m
+luci-app-nlbwmon=m
