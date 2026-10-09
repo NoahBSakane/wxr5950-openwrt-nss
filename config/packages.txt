@@ -50,6 +50,10 @@ luci-app-upnp
 # IoTとLANをまたぐ機器の発見(mDNS)の中継
 mdns-repeater
 
+# 異常の通知メール(SMTP)と、設定バックアップの暗号化
+msmtp
+openssl-util
+
 # 公開IPが変わったときにホスト名を自動更新する(DDNS。提供元は設定時に選ぶ)
 ddns-scripts
 ddns-scripts-services
