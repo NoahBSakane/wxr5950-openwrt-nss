@@ -21,6 +21,12 @@ ethtool
 adblock-fast
 luci-app-adblock-fast
 
+# adblock-fastが推奨する、リスト処理を速くするツール(BusyBox版より高速)
+gawk
+grep
+sed
+coreutils-sort
+
 # 遠隔起動(Wake-on-LAN)
 etherwake
 luci-app-wol
@@ -37,9 +43,19 @@ bind-dig
 # CPU・メモリ・帯域などの推移(collectd・rrdtoolを含む)
 luci-app-statistics
 
+# ゲーム機(Switch・Switch 2)用のUPnP。インストールだけして、必要になったときに設定で有効にする
+miniupnpd-nftables
+luci-app-upnp
+
+# IoTとLANをまたぐ機器の発見(mDNS)の中継
+mdns-repeater
+
+# 公開IPが変わったときにホスト名を自動更新する(DDNS。提供元は設定時に選ぶ)
+ddns-scripts
+ddns-scripts-services
+luci-app-ddns
+
 # イメージに組み込まず、追加インストール用パッケージだけ作る
-miniupnpd-nftables=m
-mdns-repeater=m
 # 測ってから入れるかを決めるもの
 sqm-scripts=m
 luci-app-sqm=m
