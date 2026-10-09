@@ -26,6 +26,7 @@ gawk
 grep
 sed
 coreutils-sort
+coreutils-date
 
 # 遠隔起動(Wake-on-LAN)
 etherwake
