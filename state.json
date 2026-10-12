@@ -1,0 +1,2528 @@
+{
+  "checked_at": "2026-10-12T06:04:44.868037+00:00",
+  "events": [
+    {
+      "class": "R",
+      "kind": "diverged",
+      "repo": "JuliusBairaktaris/openwrt-ppe-nss"
+    },
+    {
+      "class": "要オーナー確認",
+      "installed_matches": [],
+      "kind": "files",
+      "paths": [
+        [
+          "要オーナー確認",
+          ".github/workflows/nss-tools.yml"
+        ],
+        [
+          "要オーナー確認",
+          "README.md"
+        ],
+        [
+          "要オーナー確認",
+          "include/u-boot.mk"
+        ],
+        [
+          "R",
+          "package/base-files/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/tfa-layerscape/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/tfa-layerscape/patches/005-tools-nxp-byte_swap-pad-with-zeros.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/uboot-mediatek/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/uboot-tools/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/uboot-tools/patches/003-tools-dumpimage-fix-tools-compile.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/uboot-tools/patches/013-tools-fit_check_sign-all-image-types.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/boot/uboot-tools/patches/014-tools-fit_check_sign-no-decompress.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/firmware/mipi-dbi/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/firmware/mipi-dbi/mipi-dbi-cmd"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/linux/modules/netdevices.mk"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/linux/modules/netsupport.mk"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/linux/modules/other.mk"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/ath.mk"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/files/nss_diag.sh"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/files/pbuf.uci"
+        ],
+        [
+          "R",
+          "package/kernel/mac80211/files/qca-nss-pbuf.init"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/ath11k/953-wifi-ath11k-apply-the-160-MHz-NSS-ratio-to-the-radio.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/900-ath11k-describe-the-data-path-rings-to-the-NSS-firmware.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/901-ath11k-stop-driving-the-rings-the-NSS-firmware-owns.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/902-ath11k-return-the-link-descriptors-the-NSS-firmware-hands-back.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/903-ath11k-hand-data-frames-to-the-NSS-firmware.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/904-ath11k-tell-the-NSS-firmware-about-a-station.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/905-ath11k-tell-the-NSS-firmware-how-frames-are-protected.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/906-ath11k-let-a-supplicant-see-an-offloaded-key-exchange.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/907-ath11k-let-the-flow-table-reach-the-NSS-firmware.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/908-mac80211-let-a-driver-mirror-the-mesh-path-table.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss-wifi/909-ath11k-offload-802.11s-to-the-NSS-firmware.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/033-ath11k-fix-for-peer-memory-corruption.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/068-ath11k-add-rx-histogram-stats.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/069-ath11k-add-HE-stats-in-peer-stats.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/084-ath11k-fix-ul-ofdma-counter-always-zero-in-peer-stat.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/087-ath11k-fix-ul-ofdma-counter-increamenting-improperly.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/113-ath11k-add-8023-undecap-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/142-ath11k-adding-support-for-mgmt-frame-stats.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/199-002-ath11k_nss-add-nss-driver-interface.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/199-003-ath11k-add-nss-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/207-ath11k-Add-support-for-dynamic-vlan.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/207-ath11k-Enable-256_512MB-profiles.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/211-001-ath11k-add-WDS-offload-changes-to-NSS-driver-interface.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/211-002-ath11k-add-WDS-offload-support-on-NSS-offload-for-STA-mode.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/214-ath11k-qos-null-frame-tx-over-wmi.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/235-002-ath11k-add-support-for-ext-vdev-in-NSS-for-AP_VLAN-vif-handling.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/235-003-ath11k-add-AP_VLAN-vif-support-for-WDS-offload-in-NSS-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/236-002-ath11k-extend-ext-vdev-in-NSS-for-dynamic-VLAN-handling.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/236-003-ath11k-add-dynamic-VLAN-support-in-NSS-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/237-003-ath11k-allocate-dst-ring-descriptors-from-cacheable-.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/237-006-ath11k-Allow-fast-rx-by-bypassing-stats-update.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/244-ath11k-dp-tx-perf.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/301-ath11k-nss-mcbc-exception.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/314-ath11k-Fix-peer-lookup-failure-in-mgmt-tx-completion.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/318-ath11k-avoid-stack-corrupt-in-nwifi-undecap.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/330-ath11k-sync-wds_ast_entry-updates.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/335-0001-ath11k-optimize-tx-completions.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/335-0002-ath11k-use-DECLARE_BITMAP-for-idr-operations.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/341-ath11k-fix-support-for-ext-vdev-in-NSS-for-AP_VLAN-v.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/342-ath11k-provide-access-of-the-dma-buffer-back-to-dma-.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/357-ath11k-fix-clear-peer-keys-during-disassoc.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/362-ath11k-fix-incorrect-ast-index-assignment-for-wds-peer.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/371-ath11k-Fix-ppdu_id-from-firmware-PPDU-stats.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/373-ath11k-Add-retry-mechanism-for-update_rx_qu.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/376-ath11k-Add-nss-event-handler-support-for-link-desc.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/401-ath11k-Fix-mutex-dead-lock-and-q6-dump-crash.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/453-ath11k-flush-management-frames-to-firmware-before-wa.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/456-wifi-ath11k-Advertise-TX_QUEUE-mac-hw-flag.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/457-wifi-ath11k-Avoid-memset-of-ppdu-info-for-next-skb.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/458-wifi-ath11k-Add-support-to-send-the-QoS-Null-Data-fr.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/910-wifi-ath11k-Add-lock-when-accessing-idr_pool-of-tx_r.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/910-wifi-ath11k-correctly-free-skb-using-ieee80211_free_txskb.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/910-wifi-ath11k-remove-call-trace-while-rebooting-AP.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/911-wifi-ath11k-complete-pending-tx-frames-on-mac-stop.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-233-ath11k-Disable-rx_header-tlv-for-2K-SKB.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-312-ath11k-add-fw-11-4-check.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-374-ath11k-Check-skb_headroom-before-using-skb_push.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-800-ath11k-Add-threaded-napi.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-900-bss-transition-handling.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-901-ath11k-NSS-use-ath11k_nss_get_arvif_from_dev.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-906-ath11k-Enable-missing-256_512MB-profiles.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-920-ath11k-give-the-nss-helpers-internal-linkage.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-921-ath11k-nss-expose-wifili-peer-stats-in-debugfs.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-926-ath11k-skip-mon-status-reap-until-ring-initialized.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-927-ath11k-keep-ce-access-off-the-q6-while-it-is-down.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-929-ath11k-guard-ce-send-and-reap-against-cleared-srng.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-930-ath11k-drop-data-tx-during-crash-recovery.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-931-ath11k-nss-quiesce-wifili-at-server-exit.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-933-ath11k-count-only-the-radios-a-recovery-restarts.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-934-ath11k-nss-fix-two-lock-leaks-in-the-wifili-path.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-935-ath11k-fix-the-reo-descriptor-lifetime-on-tid-delete.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-936-ath11k-nss-free-wifili-exception-skbs-correctly.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/ath11k/999-938-ath11k-nss-skip-pdev-deinit-for-a-destroyed-radio.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/mesh/0001-subsys-300-ath11k-nss-mesh-offload-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/mesh/0002-ath11k-300-ath11k-nss-mesh-offload-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/mesh/0003-subsys-686-mac80211-fix-RCU-stall-in-mesh-fast-xmit-path.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/199-001-mac80211-add-nss-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/207-ath11k-Add-support-for-dynamic-vlan.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/207-mac80211-add-nss-redirect-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/235-001-mac80211-add-AP_VLAN-iftype-support-on-NSS-offload-case.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/236-001-mac80211-add-dynamic-VLAN-support-on-NSS-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/245-compilation_fix.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/335-0005-mac80211-simple-tx-for-AP-mode.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/342-mac80211-fix-unconditional-sta-usage.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/353-mac80211-fix-dynamic-vlan-warning-with-monitor-interface-restart.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/657-mac80211-Avoid-encapsulation-of-EAPOL-frames-if-OFFL.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/658-mac80211-free-status-frames-on-stopping-iface.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/780-mac80211-Advertise-HW-checksum-offload-only-for-ethm.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/785-wifi-mac80211-Add-mac-hw-flag-to-avoid-queue-skb.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/999-920-mac80211-give-the-nss-helpers-internal-linkage.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/nss/subsys/999-925-mac80211-nss-per-cpu-vif-transmit-queues.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/mac80211/patches/subsys/394-netfilter-flowtable-restore-ieee80211-forward-path.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/101-skb-reset.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/102-mapt.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/104-icmp.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/105-longest-prefix-match.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/106-dummy_header.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/107-stats.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/108-ce_port.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/109-fragment_if_not_df_and_larger_than_mtu.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/110-icmp_error_not_handled.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/111-fix_null_point_reference.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/112-fix_icmp_crash.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/116-rate-limit-the-print.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/117-fix-icmp-no-payload-bug.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/118-performance_fix.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/120-sleeping_backtrace.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/121-tos-fix.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nat46/patches/122-kernel-6.12.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/files/nss-wifi.config"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/files/nss-wifi.init"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/include/linux/soc/qcom/nss_wifi.h"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_bridge.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_core.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_drv.h"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_flow.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_fw.h"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_mc.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_meminfo.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_mesh.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_msg.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_phys.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_ring.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/nss-wifi-drv/src/nss_wifili.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/qca-ppe-nss/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/qca-ppe-nss/src/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/qca-ppe-nss/src/exports/nss_dp_api_if.h"
+        ],
+        [
+          "要オーナー確認",
+          "package/kernel/qca-ppe-nss/src/qca_ppe_nss.c"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/jansson/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/libbpf/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/libevent2/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/libjson-c/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/libjson-c/patches/001-dont-build-docs.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/libjson-c/patches/002-cmake-version.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/libs/openssl/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/config/ppe-qos/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/config/ppe-qos/files/ppe-qos.config"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/config/ppe-qos/files/ppe-qos.hotplug"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/config/ppe-qos/files/ppe-qos.init"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/services/hostapd/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/utils/bpftool/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/utils/bpftool/patches/002-includes.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/utils/bpftool/patches/003-skip-crypto.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/utils/iproute2/patches/400-add-nss-qdisc.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/network/utils/iproute2/patches/500-add-nssmirred.patch"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/edma-dump"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/functions.sh"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-app-nss.acl.json"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-app-nss.menu.json"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-app-nssqos.acl.json"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-app-nssqos.menu.json"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-nss-connections.js"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-nss-qos.js"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/luci-nss-status.js"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss-offload.defaults"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss-ppe-diff"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss-status"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss-tools.keep"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss-up"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss-wedge-watch"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss.init"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nss.sysctl"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nssqos-conns"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nssqos-resolve"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nssqos.config"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/files/nssqos.init"
+        ],
+        [
+          "要オーナー確認",
+          "package/nss/nss-tools/tests/nss-status.test.sh"
+        ],
+        [
+          "要オーナー確認",
+          "package/system/procd/Makefile"
+        ],
+        [
+          "R",
+          "package/system/procd/files/hotplug.json"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/099-06-v6.19-net-airoha-ppe-Remove-airoha_ppe_is_enabled-where-no.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/099-07-v6.19-net-airoha-ppe-Configure-SRAM-PPE-entries-via-the-cp.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/099-08-v6.19-net-airoha-ppe-Flush-PPE-SRAM-table-during-PPE-setup.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/099-11-v6.19-net-airoha-ppe-Do-not-use-magic-numbers-in-airoha_pp.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/134-v7.1-net-airoha-Delay-offloading-until-all-net_devices-ar.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/158-v7.2-net-airoha-configure-QoS-channel-for-HW-accelerated-.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/161-01-v7.2-net-airoha-Introduce-airoha_gdm_dev-struct.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/161-02-v7.2-net-airoha-Move-airoha_qdma-pointer-in-airoha_gdm_de.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/161-03-v7.2-net-airoha-Rely-on-airoha_gdm_dev-pointer-in-airoha_.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/165-01-v7.2-net-airoha-Remove-private-net_device-pointer-in-airo.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/165-04-v7.2-net-airoha-Introduce-WAN-device-flag.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/165-05-v7.2-net-airoha-Support-multiple-LAN-WAN-interfaces-for-h.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/173-v7.2-net-airoha-Fix-non-standard-return-value-in-airoha_p.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/915-01-net-netfilter-flowtable-Add-the-capability-to-offloa.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/airoha/patches-6.18/915-02-net-airoha-Set-hw-QoS-parameter-according-to-the-pac.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/apm821xx/image/nand.mk"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar1022_iodata_wn-ag300dgr.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar1022_sitecom_wlr-7100.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar7242_ubnt_edgeswitch-5xp.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9342_iodata_etg3-r.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9342_ubnt_aircube-ac.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9342_ubnt_wa_2port.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_atheros_db120.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_compex_wpj344-16m.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_devolo_dlan_wifi.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_dlink_dir-8x5.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_huawei_ap6010dn.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_meraki_z1.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_nec_aterm.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_netgear_wndr.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_pcs_cr5000.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_qxwlan_e750g-v8-16m.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_qxwlan_e750g-v8-8m.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_ubnt_unifi-ap-pro.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/ar9344_wd_mynet-n750.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9550_airtight_c-75.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9550_dell_apl2x.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9557_buffalo_bhr-4grv2.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9557_dongwon_dw02-412h.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9557_engenius_esr1200.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9557_iodata_wn-ac-dgr.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9557_ruckus_r500.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_belkin_f9x-v2.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_buffalo_wzr-450hp2.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_comfast_cf-wr650ac.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_compex_wpj558-16m.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_dlink_dap-2695-a1.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_dlink_dap-3662-a1.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_dlink_dir-629-a1.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_domywifi_dw33d.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_engenius_epg5000.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_engenius_esr1750.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_engenius_esr900.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_librerouter_librerouter-v1.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_linksys_ea4500-v3.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_nec_aterm.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_nec_wg2200hp.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_qxwlan_e558.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_sitecom_wlr-8100.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_tplink_archer-d7.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_tplink_tl-wdr4900-v2.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_tplink_tl-wr941n-v7-cn.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9558_trendnet_tew-823dru.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca955x_senao_router-dual.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca955x_zyxel_nbg6x16.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_asus_pl-ac56.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_comfast_cf-e375ac.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_compex_wpj563.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_dlink_covr.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_dlink_dir-842-c.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_dlink_dir-8x9-a1.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_elecom_wrc-ghbk2-i.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_glinet_gl-ar750s.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_glinet_gl-x1200.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_kuwfi_n650.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_nec_wg1200cr.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_nec_wg800hp.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_netgear_wndr.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_phicomm_k2t.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_qxwlan_e1700ac.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_rosinson_wr818.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_archer-c2-v3.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_archer-c7-v4.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_archer-x6-v2.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_archer-x7-v5.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_deco-m4r-v1.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_deco-s4-v2.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_eap245-v3.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_tl-wpa8630.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_tplink_tl-wr1043n.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_ubnt_amplifi-router-hd.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_ubnt_unifiac-pro.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_xiaomi_aiot-ac2350.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_yuncore_xd4200.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qca9563_zte_mf28x.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qcn5502_asus.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/dts/qcn5502_tplink_archer-a9-v6.dts"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/ath79/image/mikrotik.mk"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/bcm53xx/config-6.18"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/bcm53xx/image/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/bcm53xx/patches-6.18/380-ARM-dts-alamo-use-qca8337-internal-PHYs.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/backport-6.18/706-01-v7.3-net-pass-net_device_path_ctx-to-dev_fill_forward_path.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/backport-6.18/706-02-v7.2-netfilter-flowtable-bail-out-if-forward-path-cannot-b.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/backport-6.18/706-03-v7.3-netfilter-flowtable-restore-ieee80211-forward-path.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/backport-6.18/782-v7.0-net-dsa-eliminate-local-type-for-tc-policers.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/backport-6.18/783-v7.2-net-dsa-pass-extack-to-dsa_switch_ops-port_policer_.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/config-6.12"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/config-6.18"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/hack-6.12/650-netfilter-add-xt_FLOWOFFLOAD-target.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/hack-6.18/650-netfilter-add-xt_FLOWOFFLOAD-target.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/hack-6.18/721-net-add-packet-mangeling.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.12/708-01-netfilter-flowtable-teardown-direct-xmit-flows-when-the-fdb-entry-moves.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/699-netfilter-flowtable-set-out-ifindex-when-the-forward.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/708-00-net-mlx5e-ignore-FLOW_ACTION_PRIORITY-on-flowtable-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/708-01-netfilter-flowtable-teardown-direct-xmit-flows-when-the-fdb-entry-moves.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/708-netfilter-flowtable-carry-a-priority-into-the-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/709-01-netfilter-flowtable-fill-the-vlan-key-from-the-outermost-tag-only.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/709-02-netfilter-flowtable-advertise-the-vlan-match-in-used_keys.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/716-netfilter-conntrack-pick-up-a-TCP-flow-whose-SYN-was-never-answered.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/717-netfilter-flowtable-promote-a-flow-offloaded-in-one-direction-only.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/718-netfilter-nft_flow_offload-offload-a-TCP-flow-that-has-no-reply.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/719-01-8021q-add-vlan_dev_sw_netstats_rx_add-and-tx_add.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/719-02-netfilter-flowtable-update-upper-device-stats-in-the-fast-path.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/731-net-permit-ieee80211_ptr-even-with-no-CFG82111-suppo.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/736-04-net-ethernet-mediatek-fix-ppe-flow-accounting-for-L2.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/760-02-dsa-add-devlink-flash_update-callback-to-dsa.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/795-01-net-ethernet-mtk_ppe_offload-use-rhashtable_lookup_f.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/795-03-net-ethernet-mtk_ppe_offload-set-output-device-befor.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/795-07-net-ethernet-mtk_ppe_offload-use-DSA-queue-map-in-fl.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/795-09-net-ethernet-mtk_ppe-offload-flows-to-MxL862xx-switc.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/797-01-net-dsa-add-DCB-PCP-app-priority-mapping-ops.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/797-02-net-dsa-report-matchall-policer-statistics.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/797-03-net-dsa-forward-devlink-drop-trap-ops.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/generic/pending-6.18/797-04-net-dsa-forward-devlink-trap-group-and-policer-ops.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/lantiq/image/vr9.mk"
+        ],
+        [
+          "N",
+          "target/linux/layerscape/armv8_64b/config-6.18"
+        ],
+        [
+          "N",
+          "target/linux/mediatek/image/filogic.mk"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/mpc85xx/image/p1010.mk"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/config-6.18"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6018-ess.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq8074-ess.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq8074-nss.dtsi"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_edma.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_edma.h"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe.h"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_acl.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_debugfs.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_flow.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_flow_offload.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_main.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_scheduler.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_vlan.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/include/dt-bindings/net/qualcomm,ipq-ppe.yaml"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/include/linux/soc/qcom/qca_edma.h"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/include/linux/soc/qcom/qca_ppe.h"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/include/net/netfilter/nf_conntrack_dscpremark_ext.h"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/include/uapi/linux/tc_act/tc_nss_mirred.h"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/files/net/netfilter/nf_conntrack_dscpremark_ext.c"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0930-arm64-dts-qcom-ipq8074-add-ramoops.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0931-arm64-dts-ipq8074-rename-nss-region.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0940-net-sched-sch_tbf-carry-the-queue-limit-into-the-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0943-net-dsa-offer-a-flowtable-to-the-switch-before-the-conduit.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0944-net-dsa-keep-TX-VLAN-offload-off-under-a-tag-in-the-frame.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0952-net-ethernet-qca-add-ppe.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0953-net-ethernet-qca-add-EDMA.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0955-net-dsa-tag_oob-let-the-switch-claim-trapped-frames.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0959-net-dsa-install-the-VLANs-of-another-tree-s-port-as-foreign-VLANs.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0960-net-dsa-qca8k-put-bridge-FDB-entries-in-the-qca-8021q-VLAN.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0960-qca-nss-ecm-support-CORE.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0961-net-dsa-qca8k-let-the-VLAN-table-decide-egress-tagging-under-qca-8021q.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0961-qca-nss-ecm-support-PPPOE-offload.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0962-net-dsa-qca8k-report-port-statistics-from-the-MIB.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0963-net-dsa-retain-VLAN-upper-filtering-for-VLAN-taggers.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0963-qca-nss-ecm-support-netfilter-DSCPREMARK.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0964-net-dsa-qca8k-carry-802.1Q-uppers-of-qca-8021q-ports.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0966-qca-nss-ecm-bridge-Fixes-for-Bridge-VLAN-Filtering.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0969-qca-nss-clients-add-qdisc-support.patch"
+        ],
+        [
+          "要オーナー確認",
+          "target/linux/qualcommax/patches-6.18/0971-net-ipmr-ip6mr-add-MFC-offload-hooks.patch"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/common.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/dsa.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/l2.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/l2.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/l3.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/lag.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/lag.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/pie.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/pie.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl-otto.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl838x.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl839x.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl930x.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl931x.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/stats.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/stats.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/tc.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/tc.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/ethernet/realtek/rtl838x_eth.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/ethernet/realtek/rtl838x_eth.h"
+        ],
+        [
+          "N",
+          "target/linux/realtek/files-6.18/drivers/net/phy/realtek/realtek_multiport.c"
+        ],
+        [
+          "N",
+          "target/linux/realtek/patches-6.18/700-dsa-mdio-increase-max-ports-for-rtl839x-rtl931x.patch"
+        ],
+        [
+          "要オーナー確認",
+          "toolchain/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "toolchain/gcc/common.mk"
+        ],
+        [
+          "要オーナー確認",
+          "tools/expat/Makefile"
+        ],
+        [
+          "要オーナー確認",
+          "tools/mkimage/Makefile"
+        ]
+      ],
+      "repo": "JuliusBairaktaris/openwrt-ppe-nss"
+    },
+    {
+      "class": "要オーナー確認",
+      "head": "7bff0fde0f4985907c71d9f02f1806d769520286",
+      "kind": "pin_gap",
+      "pin": "bf5e182d1bdee8eeeaec6c8d5422302718110d95",
+      "repo": "JuliusBairaktaris/openwrt-ppe-nss"
+    },
+    {
+      "class": "要オーナー確認",
+      "installed_matches": [],
+      "kind": "files",
+      "paths": [
+        [
+          "要オーナー確認",
+          ".gitattributes"
+        ],
+        [
+          "要オーナー確認",
+          ".github/workflows/build-ppe.yml"
+        ],
+        [
+          "要オーナー確認",
+          ".github/workflows/build.yml"
+        ],
+        [
+          "要オーナー確認",
+          "README.md"
+        ],
+        [
+          "S",
+          "SECURITY.md"
+        ],
+        [
+          "要オーナー確認",
+          "devices/common-ppe/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/common-ppe/files/etc/uci-defaults/998-flow-offload"
+        ],
+        [
+          "R",
+          "devices/common/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/common/config.mesh"
+        ],
+        [
+          "要オーナー確認",
+          "devices/common/files.ppe-nss/etc/rc.local"
+        ],
+        [
+          "要オーナー確認",
+          "devices/common/files.ppe-nss/etc/uci-defaults/998-flow-offload"
+        ],
+        [
+          "要オーナー確認",
+          "devices/ipq60xx-1g/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/ipq60xx-512m/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/ipq807x-1g/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/ipq807x-256m/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/ipq807x-512m/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/xiaomi_ax3600/config"
+        ],
+        [
+          "要オーナー確認",
+          "devices/xiaomi_ax3600/files.edma-nss/etc/uci-defaults/999-sqm-settings"
+        ],
+        [
+          "要オーナー確認",
+          "devices/xiaomi_ax3600/files.ppe-nss/etc/uci-defaults/999-sqm-settings"
+        ],
+        [
+          "要オーナー確認",
+          "docs/ARCHITECTURE.md"
+        ],
+        [
+          "要オーナー確認",
+          "docs/CUSTOMIZE.md"
+        ],
+        [
+          "要オーナー確認",
+          "patches/feeds/edma-nss/luci/0001-status-connections-show-nss-dscp-class.patch"
+        ],
+        [
+          "要オーナー確認",
+          "patches/feeds/ppe-nss/packages/0001-sqm-scripts-pin-the-fork-that-carries-hw_ppe.patch"
+        ],
+        [
+          "要オーナー確認",
+          "patches/tree/edma-nss/0001-mac80211-ath11k-apply-the-160-MHz-NSS-ratio-to-the-radio.patch"
+        ],
+        [
+          "要オーナー確認",
+          "patches/tree/ppe/0001-kernel-select-evdev-for-HID-only-with-input-support.patch"
+        ]
+      ],
+      "repo": "JuliusBairaktaris/Qualcommax_NSS_Builder"
+    },
+    {
+      "class": "要オーナー確認",
+      "head": "b61f6650e37d814f96a27810e5a6d8611e782838",
+      "kind": "pin_gap",
+      "pin": "11d8ea6810357f68c0557b0a532ee53f10d40938",
+      "repo": "JuliusBairaktaris/Qualcommax_NSS_Builder"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-7c3j-f7w2-p8f6",
+      "installed_matches": [
+        "sed"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "mdnsd: Stack buffer overflow in DNS PTR query",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-7c3j-f7w2-p8f6"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-9558-77jp-g3fw",
+      "installed_matches": [
+        "sed"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "EAD Integer Underflow → Pre-Auth Denial of Service",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-9558-77jp-g3fw"
+    },
+    {
+      "class": "S",
+      "id": "GHSA-cp32-65v4-cp73",
+      "installed_matches": [],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "ubusd: heap buffer overflow",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-cp32-65v4-cp73"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-h427-frpr-7cqr",
+      "installed_matches": [
+        "sed"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "ltq-ptm: local privilege escalation",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-h427-frpr-7cqr"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-hhmc-92hw-535f",
+      "installed_matches": [
+        "dnsmasq",
+        "luci",
+        "sed"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "odhcpd/LuCI: unauthenticated DHCPv6 client can inject lease-file lines via FQDN hostname → stored XSS in the LuCI admin UI",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-hhmc-92hw-535f"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-jw28-hxcm-j934",
+      "installed_matches": [
+        "procd"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "procd: Command execution via PATH environment variable filter bypass",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-jw28-hxcm-j934"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-jw5r-xhf5-2xcq",
+      "installed_matches": [
+        "curl",
+        "luci"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "ACL bypass and arbitrary root file read via cgi-io cgi-download",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-jw5r-xhf5-2xcq"
+    },
+    {
+      "class": "要オーナー確認",
+      "id": "GHSA-mpgh-v658-jqv5",
+      "installed_matches": [
+        "sed"
+      ],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "mdnsd: Stack buffer overflow in IPv6 reverse DNS lookup",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-mpgh-v658-jqv5"
+    },
+    {
+      "class": "S",
+      "id": "GHSA-rcc6-v4r6-gj4m",
+      "installed_matches": [],
+      "kind": "ghsa",
+      "patch_status": "未判定",
+      "summary": "jsonpath: Memory leak when processing strings, labels, and regexp tokens",
+      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-rcc6-v4r6-gj4m"
+    }
+  ],
+  "issue_number": 1,
+  "notified_digest": "bdae4fa809cd807192ab589186f866c69c6507c53ab069decd1600c84480bf76",
+  "pins": {
+    "candidate": {
+      "builder": {
+        "repo": "JuliusBairaktaris/Qualcommax_NSS_Builder",
+        "sha": "11d8ea6810357f68c0557b0a532ee53f10d40938"
+      },
+      "builder_ref": "archive/edma-nss-final",
+      "feeds": {
+        "luci": {
+          "repo": "openwrt/luci",
+          "sha": "acda1ad6f1e6e9d487cd29f58cf166419826de55",
+          "url": "https://git.openwrt.org/project/luci.git"
+        },
+        "nss": {
+          "ref": "archive/edma-nss-final",
+          "repo": "JuliusBairaktaris/nss-packages",
+          "sha": "f06e232fb141c3edf19866740639ade0fd9caef7",
+          "url": "https://github.com/JuliusBairaktaris/nss-packages.git"
+        },
+        "packages": {
+          "repo": "openwrt/packages",
+          "sha": "6fb711fed018a04030ffae4976030b7079c9a489",
+          "url": "https://git.openwrt.org/feed/packages.git"
+        },
+        "routing": {
+          "repo": "openwrt/routing",
+          "sha": "4b9891b9136259f93294a424507ed24c5e8c1cbd",
+          "url": "https://git.openwrt.org/feed/routing.git"
+        },
+        "telephony": {
+          "repo": "openwrt/telephony",
+          "sha": "5d68d53c160a325ea9d03fce393e051573bcc736",
+          "url": "https://git.openwrt.org/feed/telephony.git"
+        },
+        "video": {
+          "repo": "openwrt/video",
+          "sha": "6917907d4d6c670cf85be525d23216595655061d",
+          "url": "https://github.com/openwrt/video.git"
+        }
+      },
+      "fetched_at": "2026-10-12T03:35:49Z",
+      "fork": {
+        "repo": "JuliusBairaktaris/openwrt-ppe-nss",
+        "sha": "bf5e182d1bdee8eeeaec6c8d5422302718110d95"
+      },
+      "kernel": "6.18.55",
+      "ref": "archive/nss-edma-rework-final",
+      "upstream_openwrt": {
+        "repo": "openwrt/openwrt",
+        "sha": "1daf1410c575360bc4ec4896281f0140d528d34d"
+      },
+      "versions": {
+        "curl": "8.22.0",
+        "dnsmasq": "2.93",
+        "hostapd": "2026-08-07/831364bf02710ad09c2f27d3efa92abeeb5634c0",
+        "openssl": "3.5.9",
+        "tailscale": "1.102.3"
+      }
+    },
+    "deployed": {
+      "builder": {
+        "repo": "JuliusBairaktaris/Qualcommax_NSS_Builder",
+        "sha": "016581e7911a7bf273b4fc072fc5d133d13a5409"
+      },
+      "builder_ref": "016581e7911a7bf273b4fc072fc5d133d13a5409",
+      "feeds": {
+        "luci": {
+          "repo": "openwrt/luci",
+          "sha": "37e6a6bb654984bfaaeff18bcd7cfa8d9c568a52",
+          "url": "https://git.openwrt.org/project/luci.git"
+        },
+        "nss": {
+          "repo": "JuliusBairaktaris/nss-packages",
+          "sha": "c30fbbff85b239dda09ed2719646ec3c58159b89",
+          "url": "https://github.com/JuliusBairaktaris/nss-packages.git"
+        },
+        "packages": {
+          "repo": "openwrt/packages",
+          "sha": "607b3dd1b5bb9c4f01f724eb3788fd21517f2250",
+          "url": "https://git.openwrt.org/feed/packages.git"
+        },
+        "routing": {
+          "repo": "openwrt/routing",
+          "sha": "4b9891b9136259f93294a424507ed24c5e8c1cbd",
+          "url": "https://git.openwrt.org/feed/routing.git"
+        },
+        "telephony": {
+          "repo": "openwrt/telephony",
+          "sha": "5d68d53c160a325ea9d03fce393e051573bcc736",
+          "url": "https://git.openwrt.org/feed/telephony.git"
+        },
+        "video": {
+          "repo": "openwrt/video",
+          "sha": "8d4551ceb287527f6a2ba99f9e86ded782a937bb",
+          "url": "https://github.com/openwrt/video.git"
+        }
+      },
+      "fork": {
+        "repo": "JuliusBairaktaris/openwrt-ppe-nss",
+        "sha": "c55808ed65f74e8797fe8b1d7b727cc0ba4eb276"
+      },
+      "kernel": "6.18.55",
+      "observed_at": "2026-10-12T03:35:49Z",
+      "ref": "c55808ed65f74e8797fe8b1d7b727cc0ba4eb276",
+      "source_run": 37897862006,
+      "versions": {
+        "curl": "8.22.0",
+        "dnsmasq": "2.93",
+        "hostapd": "2026-08-07/831364bf02710ad09c2f27d3efa92abeeb5634c0",
+        "openssl": "3.5.9",
+        "tailscale": "1.102.3"
+      }
+    },
+    "schema": 1
+  },
+  "schema": 1,
+  "snapshot": {
+    "ghsa_ids": [
+      "GHSA-7c3j-f7w2-p8f6",
+      "GHSA-9558-77jp-g3fw",
+      "GHSA-cp32-65v4-cp73",
+      "GHSA-h427-frpr-7cqr",
+      "GHSA-hhmc-92hw-535f",
+      "GHSA-jw28-hxcm-j934",
+      "GHSA-jw5r-xhf5-2xcq",
+      "GHSA-mpgh-v658-jqv5",
+      "GHSA-rcc6-v4r6-gj4m"
+    ],
+    "openwrt_main_sha": "1daf1410c575360bc4ec4896281f0140d528d34d",
+    "repos": {
+      "builder": {
+        "ahead_by": 7,
+        "archived": false,
+        "changed_files": [
+          ".gitattributes",
+          ".github/workflows/build-ppe.yml",
+          ".github/workflows/build.yml",
+          "README.md",
+          "SECURITY.md",
+          "devices/common-ppe/config",
+          "devices/common-ppe/files/etc/uci-defaults/998-flow-offload",
+          "devices/common/config",
+          "devices/common/config.mesh",
+          "devices/common/files.ppe-nss/etc/rc.local",
+          "devices/common/files.ppe-nss/etc/uci-defaults/998-flow-offload",
+          "devices/ipq60xx-1g/config",
+          "devices/ipq60xx-512m/config",
+          "devices/ipq807x-1g/config",
+          "devices/ipq807x-256m/config",
+          "devices/ipq807x-512m/config",
+          "devices/xiaomi_ax3600/config",
+          "devices/xiaomi_ax3600/files.edma-nss/etc/uci-defaults/999-sqm-settings",
+          "devices/xiaomi_ax3600/files.ppe-nss/etc/uci-defaults/999-sqm-settings",
+          "docs/ARCHITECTURE.md",
+          "docs/CUSTOMIZE.md",
+          "patches/feeds/edma-nss/luci/0001-status-connections-show-nss-dscp-class.patch",
+          "patches/feeds/ppe-nss/packages/0001-sqm-scripts-pin-the-fork-that-carries-hw_ppe.patch",
+          "patches/tree/edma-nss/0001-mac80211-ath11k-apply-the-160-MHz-NSS-ratio-to-the-radio.patch",
+          "patches/tree/ppe/0001-kernel-select-evdev-for-HID-only-with-input-support.patch"
+        ],
+        "compare_status": "ahead",
+        "default_branch": "main",
+        "files_source": "compare",
+        "full_name": "JuliusBairaktaris/Qualcommax_NSS_Builder",
+        "head": "b61f6650e37d814f96a27810e5a6d8611e782838",
+        "requested": "JuliusBairaktaris/Qualcommax_NSS_Builder",
+        "tags": {
+          "archive/edma-nss-final": {
+            "commit_sha": "11d8ea6810357f68c0557b0a532ee53f10d40938",
+            "object_sha": "f699fab8dea3ce9f4f1e6857e4a146b7d2310363"
+          }
+        }
+      },
+      "fork": {
+        "ahead_by": 252,
+        "archived": false,
+        "changed_files": [
+          ".github/workflows/nss-tools.yml",
+          "README.md",
+          "include/u-boot.mk",
+          "package/base-files/Makefile",
+          "package/boot/tfa-layerscape/Makefile",
+          "package/boot/tfa-layerscape/patches/005-tools-nxp-byte_swap-pad-with-zeros.patch",
+          "package/boot/uboot-mediatek/Makefile",
+          "package/boot/uboot-tools/Makefile",
+          "package/boot/uboot-tools/patches/003-tools-dumpimage-fix-tools-compile.patch",
+          "package/boot/uboot-tools/patches/013-tools-fit_check_sign-all-image-types.patch",
+          "package/boot/uboot-tools/patches/014-tools-fit_check_sign-no-decompress.patch",
+          "package/firmware/mipi-dbi/Makefile",
+          "package/firmware/mipi-dbi/mipi-dbi-cmd",
+          "package/kernel/linux/modules/netdevices.mk",
+          "package/kernel/linux/modules/netsupport.mk",
+          "package/kernel/linux/modules/other.mk",
+          "package/kernel/mac80211/Makefile",
+          "package/kernel/mac80211/ath.mk",
+          "package/kernel/mac80211/files/nss_diag.sh",
+          "package/kernel/mac80211/files/pbuf.uci",
+          "package/kernel/mac80211/files/qca-nss-pbuf.init",
+          "package/kernel/mac80211/patches/ath11k/953-wifi-ath11k-apply-the-160-MHz-NSS-ratio-to-the-radio.patch",
+          "package/kernel/mac80211/patches/nss-wifi/900-ath11k-describe-the-data-path-rings-to-the-NSS-firmware.patch",
+          "package/kernel/mac80211/patches/nss-wifi/901-ath11k-stop-driving-the-rings-the-NSS-firmware-owns.patch",
+          "package/kernel/mac80211/patches/nss-wifi/902-ath11k-return-the-link-descriptors-the-NSS-firmware-hands-back.patch",
+          "package/kernel/mac80211/patches/nss-wifi/903-ath11k-hand-data-frames-to-the-NSS-firmware.patch",
+          "package/kernel/mac80211/patches/nss-wifi/904-ath11k-tell-the-NSS-firmware-about-a-station.patch",
+          "package/kernel/mac80211/patches/nss-wifi/905-ath11k-tell-the-NSS-firmware-how-frames-are-protected.patch",
+          "package/kernel/mac80211/patches/nss-wifi/906-ath11k-let-a-supplicant-see-an-offloaded-key-exchange.patch",
+          "package/kernel/mac80211/patches/nss-wifi/907-ath11k-let-the-flow-table-reach-the-NSS-firmware.patch",
+          "package/kernel/mac80211/patches/nss-wifi/908-mac80211-let-a-driver-mirror-the-mesh-path-table.patch",
+          "package/kernel/mac80211/patches/nss-wifi/909-ath11k-offload-802.11s-to-the-NSS-firmware.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/033-ath11k-fix-for-peer-memory-corruption.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/068-ath11k-add-rx-histogram-stats.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/069-ath11k-add-HE-stats-in-peer-stats.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/084-ath11k-fix-ul-ofdma-counter-always-zero-in-peer-stat.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/087-ath11k-fix-ul-ofdma-counter-increamenting-improperly.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/113-ath11k-add-8023-undecap-support.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/142-ath11k-adding-support-for-mgmt-frame-stats.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/199-002-ath11k_nss-add-nss-driver-interface.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/199-003-ath11k-add-nss-support.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/207-ath11k-Add-support-for-dynamic-vlan.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/207-ath11k-Enable-256_512MB-profiles.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/211-001-ath11k-add-WDS-offload-changes-to-NSS-driver-interface.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/211-002-ath11k-add-WDS-offload-support-on-NSS-offload-for-STA-mode.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/214-ath11k-qos-null-frame-tx-over-wmi.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/235-002-ath11k-add-support-for-ext-vdev-in-NSS-for-AP_VLAN-vif-handling.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/235-003-ath11k-add-AP_VLAN-vif-support-for-WDS-offload-in-NSS-offload.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/236-002-ath11k-extend-ext-vdev-in-NSS-for-dynamic-VLAN-handling.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/236-003-ath11k-add-dynamic-VLAN-support-in-NSS-offload.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/237-003-ath11k-allocate-dst-ring-descriptors-from-cacheable-.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/237-006-ath11k-Allow-fast-rx-by-bypassing-stats-update.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/244-ath11k-dp-tx-perf.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/301-ath11k-nss-mcbc-exception.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/314-ath11k-Fix-peer-lookup-failure-in-mgmt-tx-completion.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/318-ath11k-avoid-stack-corrupt-in-nwifi-undecap.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/330-ath11k-sync-wds_ast_entry-updates.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/335-0001-ath11k-optimize-tx-completions.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/335-0002-ath11k-use-DECLARE_BITMAP-for-idr-operations.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/341-ath11k-fix-support-for-ext-vdev-in-NSS-for-AP_VLAN-v.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/342-ath11k-provide-access-of-the-dma-buffer-back-to-dma-.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/357-ath11k-fix-clear-peer-keys-during-disassoc.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/362-ath11k-fix-incorrect-ast-index-assignment-for-wds-peer.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/371-ath11k-Fix-ppdu_id-from-firmware-PPDU-stats.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/373-ath11k-Add-retry-mechanism-for-update_rx_qu.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/376-ath11k-Add-nss-event-handler-support-for-link-desc.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/401-ath11k-Fix-mutex-dead-lock-and-q6-dump-crash.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/453-ath11k-flush-management-frames-to-firmware-before-wa.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/456-wifi-ath11k-Advertise-TX_QUEUE-mac-hw-flag.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/457-wifi-ath11k-Avoid-memset-of-ppdu-info-for-next-skb.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/458-wifi-ath11k-Add-support-to-send-the-QoS-Null-Data-fr.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/910-wifi-ath11k-Add-lock-when-accessing-idr_pool-of-tx_r.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/910-wifi-ath11k-correctly-free-skb-using-ieee80211_free_txskb.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/910-wifi-ath11k-remove-call-trace-while-rebooting-AP.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/911-wifi-ath11k-complete-pending-tx-frames-on-mac-stop.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-233-ath11k-Disable-rx_header-tlv-for-2K-SKB.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-312-ath11k-add-fw-11-4-check.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-374-ath11k-Check-skb_headroom-before-using-skb_push.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-800-ath11k-Add-threaded-napi.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-900-bss-transition-handling.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-901-ath11k-NSS-use-ath11k_nss_get_arvif_from_dev.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-906-ath11k-Enable-missing-256_512MB-profiles.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-920-ath11k-give-the-nss-helpers-internal-linkage.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-921-ath11k-nss-expose-wifili-peer-stats-in-debugfs.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-926-ath11k-skip-mon-status-reap-until-ring-initialized.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-927-ath11k-keep-ce-access-off-the-q6-while-it-is-down.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-929-ath11k-guard-ce-send-and-reap-against-cleared-srng.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-930-ath11k-drop-data-tx-during-crash-recovery.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-931-ath11k-nss-quiesce-wifili-at-server-exit.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-933-ath11k-count-only-the-radios-a-recovery-restarts.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-934-ath11k-nss-fix-two-lock-leaks-in-the-wifili-path.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-935-ath11k-fix-the-reo-descriptor-lifetime-on-tid-delete.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-936-ath11k-nss-free-wifili-exception-skbs-correctly.patch",
+          "package/kernel/mac80211/patches/nss/ath11k/999-938-ath11k-nss-skip-pdev-deinit-for-a-destroyed-radio.patch",
+          "package/kernel/mac80211/patches/nss/mesh/0001-subsys-300-ath11k-nss-mesh-offload-support.patch",
+          "package/kernel/mac80211/patches/nss/mesh/0002-ath11k-300-ath11k-nss-mesh-offload-support.patch",
+          "package/kernel/mac80211/patches/nss/mesh/0003-subsys-686-mac80211-fix-RCU-stall-in-mesh-fast-xmit-path.patch",
+          "package/kernel/mac80211/patches/nss/subsys/199-001-mac80211-add-nss-support.patch",
+          "package/kernel/mac80211/patches/nss/subsys/207-ath11k-Add-support-for-dynamic-vlan.patch",
+          "package/kernel/mac80211/patches/nss/subsys/207-mac80211-add-nss-redirect-support.patch",
+          "package/kernel/mac80211/patches/nss/subsys/235-001-mac80211-add-AP_VLAN-iftype-support-on-NSS-offload-case.patch",
+          "package/kernel/mac80211/patches/nss/subsys/236-001-mac80211-add-dynamic-VLAN-support-on-NSS-offload.patch",
+          "package/kernel/mac80211/patches/nss/subsys/245-compilation_fix.patch",
+          "package/kernel/mac80211/patches/nss/subsys/335-0005-mac80211-simple-tx-for-AP-mode.patch",
+          "package/kernel/mac80211/patches/nss/subsys/342-mac80211-fix-unconditional-sta-usage.patch",
+          "package/kernel/mac80211/patches/nss/subsys/353-mac80211-fix-dynamic-vlan-warning-with-monitor-interface-restart.patch",
+          "package/kernel/mac80211/patches/nss/subsys/657-mac80211-Avoid-encapsulation-of-EAPOL-frames-if-OFFL.patch",
+          "package/kernel/mac80211/patches/nss/subsys/658-mac80211-free-status-frames-on-stopping-iface.patch",
+          "package/kernel/mac80211/patches/nss/subsys/780-mac80211-Advertise-HW-checksum-offload-only-for-ethm.patch",
+          "package/kernel/mac80211/patches/nss/subsys/785-wifi-mac80211-Add-mac-hw-flag-to-avoid-queue-skb.patch",
+          "package/kernel/mac80211/patches/nss/subsys/999-920-mac80211-give-the-nss-helpers-internal-linkage.patch",
+          "package/kernel/mac80211/patches/nss/subsys/999-925-mac80211-nss-per-cpu-vif-transmit-queues.patch",
+          "package/kernel/mac80211/patches/subsys/394-netfilter-flowtable-restore-ieee80211-forward-path.patch",
+          "package/kernel/nat46/Makefile",
+          "package/kernel/nat46/patches/101-skb-reset.patch",
+          "package/kernel/nat46/patches/102-mapt.patch",
+          "package/kernel/nat46/patches/104-icmp.patch",
+          "package/kernel/nat46/patches/105-longest-prefix-match.patch",
+          "package/kernel/nat46/patches/106-dummy_header.patch",
+          "package/kernel/nat46/patches/107-stats.patch",
+          "package/kernel/nat46/patches/108-ce_port.patch",
+          "package/kernel/nat46/patches/109-fragment_if_not_df_and_larger_than_mtu.patch",
+          "package/kernel/nat46/patches/110-icmp_error_not_handled.patch",
+          "package/kernel/nat46/patches/111-fix_null_point_reference.patch",
+          "package/kernel/nat46/patches/112-fix_icmp_crash.patch",
+          "package/kernel/nat46/patches/116-rate-limit-the-print.patch",
+          "package/kernel/nat46/patches/117-fix-icmp-no-payload-bug.patch",
+          "package/kernel/nat46/patches/118-performance_fix.patch",
+          "package/kernel/nat46/patches/120-sleeping_backtrace.patch",
+          "package/kernel/nat46/patches/121-tos-fix.patch",
+          "package/kernel/nat46/patches/122-kernel-6.12.patch",
+          "package/kernel/nss-wifi-drv/Makefile",
+          "package/kernel/nss-wifi-drv/files/nss-wifi.config",
+          "package/kernel/nss-wifi-drv/files/nss-wifi.init",
+          "package/kernel/nss-wifi-drv/src/Makefile",
+          "package/kernel/nss-wifi-drv/src/include/linux/soc/qcom/nss_wifi.h",
+          "package/kernel/nss-wifi-drv/src/nss_bridge.c",
+          "package/kernel/nss-wifi-drv/src/nss_core.c",
+          "package/kernel/nss-wifi-drv/src/nss_drv.h",
+          "package/kernel/nss-wifi-drv/src/nss_flow.c",
+          "package/kernel/nss-wifi-drv/src/nss_fw.h",
+          "package/kernel/nss-wifi-drv/src/nss_mc.c",
+          "package/kernel/nss-wifi-drv/src/nss_meminfo.c",
+          "package/kernel/nss-wifi-drv/src/nss_mesh.c",
+          "package/kernel/nss-wifi-drv/src/nss_msg.c",
+          "package/kernel/nss-wifi-drv/src/nss_phys.c",
+          "package/kernel/nss-wifi-drv/src/nss_ring.c",
+          "package/kernel/nss-wifi-drv/src/nss_wifili.c",
+          "package/kernel/qca-ppe-nss/Makefile",
+          "package/kernel/qca-ppe-nss/src/Makefile",
+          "package/kernel/qca-ppe-nss/src/exports/nss_dp_api_if.h",
+          "package/kernel/qca-ppe-nss/src/qca_ppe_nss.c",
+          "package/libs/jansson/Makefile",
+          "package/libs/libbpf/Makefile",
+          "package/libs/libevent2/Makefile",
+          "package/libs/libjson-c/Makefile",
+          "package/libs/libjson-c/patches/001-dont-build-docs.patch",
+          "package/libs/libjson-c/patches/002-cmake-version.patch",
+          "package/libs/openssl/Makefile",
+          "package/network/config/ppe-qos/Makefile",
+          "package/network/config/ppe-qos/files/ppe-qos.config",
+          "package/network/config/ppe-qos/files/ppe-qos.hotplug",
+          "package/network/config/ppe-qos/files/ppe-qos.init",
+          "package/network/services/hostapd/Makefile",
+          "package/network/utils/bpftool/Makefile",
+          "package/network/utils/bpftool/patches/002-includes.patch",
+          "package/network/utils/bpftool/patches/003-skip-crypto.patch",
+          "package/network/utils/iproute2/patches/400-add-nss-qdisc.patch",
+          "package/network/utils/iproute2/patches/500-add-nssmirred.patch",
+          "package/nss/nss-tools/Makefile",
+          "package/nss/nss-tools/files/edma-dump",
+          "package/nss/nss-tools/files/functions.sh",
+          "package/nss/nss-tools/files/luci-app-nss.acl.json",
+          "package/nss/nss-tools/files/luci-app-nss.menu.json",
+          "package/nss/nss-tools/files/luci-app-nssqos.acl.json",
+          "package/nss/nss-tools/files/luci-app-nssqos.menu.json",
+          "package/nss/nss-tools/files/luci-nss-connections.js",
+          "package/nss/nss-tools/files/luci-nss-qos.js",
+          "package/nss/nss-tools/files/luci-nss-status.js",
+          "package/nss/nss-tools/files/nss-offload.defaults",
+          "package/nss/nss-tools/files/nss-ppe-diff",
+          "package/nss/nss-tools/files/nss-status",
+          "package/nss/nss-tools/files/nss-tools.keep",
+          "package/nss/nss-tools/files/nss-up",
+          "package/nss/nss-tools/files/nss-wedge-watch",
+          "package/nss/nss-tools/files/nss.init",
+          "package/nss/nss-tools/files/nss.sysctl",
+          "package/nss/nss-tools/files/nssqos-conns",
+          "package/nss/nss-tools/files/nssqos-resolve",
+          "package/nss/nss-tools/files/nssqos.config",
+          "package/nss/nss-tools/files/nssqos.init",
+          "package/nss/nss-tools/tests/nss-status.test.sh",
+          "package/system/procd/Makefile",
+          "package/system/procd/files/hotplug.json",
+          "target/linux/airoha/patches-6.18/099-06-v6.19-net-airoha-ppe-Remove-airoha_ppe_is_enabled-where-no.patch",
+          "target/linux/airoha/patches-6.18/099-07-v6.19-net-airoha-ppe-Configure-SRAM-PPE-entries-via-the-cp.patch",
+          "target/linux/airoha/patches-6.18/099-08-v6.19-net-airoha-ppe-Flush-PPE-SRAM-table-during-PPE-setup.patch",
+          "target/linux/airoha/patches-6.18/099-11-v6.19-net-airoha-ppe-Do-not-use-magic-numbers-in-airoha_pp.patch",
+          "target/linux/airoha/patches-6.18/134-v7.1-net-airoha-Delay-offloading-until-all-net_devices-ar.patch",
+          "target/linux/airoha/patches-6.18/158-v7.2-net-airoha-configure-QoS-channel-for-HW-accelerated-.patch",
+          "target/linux/airoha/patches-6.18/161-01-v7.2-net-airoha-Introduce-airoha_gdm_dev-struct.patch",
+          "target/linux/airoha/patches-6.18/161-02-v7.2-net-airoha-Move-airoha_qdma-pointer-in-airoha_gdm_de.patch",
+          "target/linux/airoha/patches-6.18/161-03-v7.2-net-airoha-Rely-on-airoha_gdm_dev-pointer-in-airoha_.patch",
+          "target/linux/airoha/patches-6.18/165-01-v7.2-net-airoha-Remove-private-net_device-pointer-in-airo.patch",
+          "target/linux/airoha/patches-6.18/165-04-v7.2-net-airoha-Introduce-WAN-device-flag.patch",
+          "target/linux/airoha/patches-6.18/165-05-v7.2-net-airoha-Support-multiple-LAN-WAN-interfaces-for-h.patch",
+          "target/linux/airoha/patches-6.18/173-v7.2-net-airoha-Fix-non-standard-return-value-in-airoha_p.patch",
+          "target/linux/airoha/patches-6.18/915-01-net-netfilter-flowtable-Add-the-capability-to-offloa.patch",
+          "target/linux/airoha/patches-6.18/915-02-net-airoha-Set-hw-QoS-parameter-according-to-the-pac.patch",
+          "target/linux/apm821xx/image/nand.mk",
+          "target/linux/ath79/dts/ar1022_iodata_wn-ag300dgr.dts",
+          "target/linux/ath79/dts/ar1022_sitecom_wlr-7100.dts",
+          "target/linux/ath79/dts/ar7242_ubnt_edgeswitch-5xp.dts",
+          "target/linux/ath79/dts/ar9342_iodata_etg3-r.dts",
+          "target/linux/ath79/dts/ar9342_ubnt_aircube-ac.dts",
+          "target/linux/ath79/dts/ar9342_ubnt_wa_2port.dtsi",
+          "target/linux/ath79/dts/ar9344_atheros_db120.dts",
+          "target/linux/ath79/dts/ar9344_compex_wpj344-16m.dts",
+          "target/linux/ath79/dts/ar9344_devolo_dlan_wifi.dtsi",
+          "target/linux/ath79/dts/ar9344_dlink_dir-8x5.dtsi",
+          "target/linux/ath79/dts/ar9344_huawei_ap6010dn.dts",
+          "target/linux/ath79/dts/ar9344_meraki_z1.dts",
+          "target/linux/ath79/dts/ar9344_nec_aterm.dtsi",
+          "target/linux/ath79/dts/ar9344_netgear_wndr.dtsi",
+          "target/linux/ath79/dts/ar9344_pcs_cr5000.dts",
+          "target/linux/ath79/dts/ar9344_qxwlan_e750g-v8-16m.dts",
+          "target/linux/ath79/dts/ar9344_qxwlan_e750g-v8-8m.dts",
+          "target/linux/ath79/dts/ar9344_ubnt_unifi-ap-pro.dts",
+          "target/linux/ath79/dts/ar9344_wd_mynet-n750.dts",
+          "target/linux/ath79/dts/qca9550_airtight_c-75.dts",
+          "target/linux/ath79/dts/qca9550_dell_apl2x.dtsi",
+          "target/linux/ath79/dts/qca9557_buffalo_bhr-4grv2.dts",
+          "target/linux/ath79/dts/qca9557_dongwon_dw02-412h.dtsi",
+          "target/linux/ath79/dts/qca9557_engenius_esr1200.dts",
+          "target/linux/ath79/dts/qca9557_iodata_wn-ac-dgr.dtsi",
+          "target/linux/ath79/dts/qca9557_ruckus_r500.dts",
+          "target/linux/ath79/dts/qca9558_belkin_f9x-v2.dtsi",
+          "target/linux/ath79/dts/qca9558_buffalo_wzr-450hp2.dts",
+          "target/linux/ath79/dts/qca9558_comfast_cf-wr650ac.dtsi",
+          "target/linux/ath79/dts/qca9558_compex_wpj558-16m.dts",
+          "target/linux/ath79/dts/qca9558_dlink_dap-2695-a1.dts",
+          "target/linux/ath79/dts/qca9558_dlink_dap-3662-a1.dts",
+          "target/linux/ath79/dts/qca9558_dlink_dir-629-a1.dts",
+          "target/linux/ath79/dts/qca9558_domywifi_dw33d.dts",
+          "target/linux/ath79/dts/qca9558_engenius_epg5000.dts",
+          "target/linux/ath79/dts/qca9558_engenius_esr1750.dts",
+          "target/linux/ath79/dts/qca9558_engenius_esr900.dts",
+          "target/linux/ath79/dts/qca9558_librerouter_librerouter-v1.dts",
+          "target/linux/ath79/dts/qca9558_linksys_ea4500-v3.dts",
+          "target/linux/ath79/dts/qca9558_nec_aterm.dtsi",
+          "target/linux/ath79/dts/qca9558_nec_wg2200hp.dts",
+          "target/linux/ath79/dts/qca9558_qxwlan_e558.dtsi",
+          "target/linux/ath79/dts/qca9558_sitecom_wlr-8100.dts",
+          "target/linux/ath79/dts/qca9558_tplink_archer-d7.dtsi",
+          "target/linux/ath79/dts/qca9558_tplink_tl-wdr4900-v2.dts",
+          "target/linux/ath79/dts/qca9558_tplink_tl-wr941n-v7-cn.dts",
+          "target/linux/ath79/dts/qca9558_trendnet_tew-823dru.dts",
+          "target/linux/ath79/dts/qca955x_senao_router-dual.dtsi",
+          "target/linux/ath79/dts/qca955x_zyxel_nbg6x16.dtsi",
+          "target/linux/ath79/dts/qca9563_asus_pl-ac56.dts",
+          "target/linux/ath79/dts/qca9563_comfast_cf-e375ac.dts",
+          "target/linux/ath79/dts/qca9563_compex_wpj563.dts",
+          "target/linux/ath79/dts/qca9563_dlink_covr.dtsi",
+          "target/linux/ath79/dts/qca9563_dlink_dir-842-c.dtsi",
+          "target/linux/ath79/dts/qca9563_dlink_dir-8x9-a1.dtsi",
+          "target/linux/ath79/dts/qca9563_elecom_wrc-ghbk2-i.dtsi",
+          "target/linux/ath79/dts/qca9563_glinet_gl-ar750s.dtsi",
+          "target/linux/ath79/dts/qca9563_glinet_gl-x1200.dtsi",
+          "target/linux/ath79/dts/qca9563_kuwfi_n650.dts",
+          "target/linux/ath79/dts/qca9563_nec_wg1200cr.dts",
+          "target/linux/ath79/dts/qca9563_nec_wg800hp.dts",
+          "target/linux/ath79/dts/qca9563_netgear_wndr.dtsi",
+          "target/linux/ath79/dts/qca9563_phicomm_k2t.dts",
+          "target/linux/ath79/dts/qca9563_qxwlan_e1700ac.dtsi",
+          "target/linux/ath79/dts/qca9563_rosinson_wr818.dts",
+          "target/linux/ath79/dts/qca9563_tplink_archer-c2-v3.dts",
+          "target/linux/ath79/dts/qca9563_tplink_archer-c7-v4.dts",
+          "target/linux/ath79/dts/qca9563_tplink_archer-x6-v2.dtsi",
+          "target/linux/ath79/dts/qca9563_tplink_archer-x7-v5.dtsi",
+          "target/linux/ath79/dts/qca9563_tplink_deco-m4r-v1.dts",
+          "target/linux/ath79/dts/qca9563_tplink_deco-s4-v2.dts",
+          "target/linux/ath79/dts/qca9563_tplink_eap245-v3.dts",
+          "target/linux/ath79/dts/qca9563_tplink_tl-wpa8630.dtsi",
+          "target/linux/ath79/dts/qca9563_tplink_tl-wr1043n.dtsi",
+          "target/linux/ath79/dts/qca9563_ubnt_amplifi-router-hd.dts",
+          "target/linux/ath79/dts/qca9563_ubnt_unifiac-pro.dtsi",
+          "target/linux/ath79/dts/qca9563_xiaomi_aiot-ac2350.dts",
+          "target/linux/ath79/dts/qca9563_yuncore_xd4200.dtsi",
+          "target/linux/ath79/dts/qca9563_zte_mf28x.dtsi",
+          "target/linux/ath79/dts/qcn5502_asus.dtsi",
+          "target/linux/ath79/dts/qcn5502_tplink_archer-a9-v6.dts",
+          "target/linux/ath79/image/mikrotik.mk",
+          "target/linux/bcm53xx/config-6.18",
+          "target/linux/bcm53xx/image/Makefile",
+          "target/linux/bcm53xx/patches-6.18/380-ARM-dts-alamo-use-qca8337-internal-PHYs.patch",
+          "target/linux/generic/backport-6.18/706-01-v7.3-net-pass-net_device_path_ctx-to-dev_fill_forward_path.patch",
+          "target/linux/generic/backport-6.18/706-02-v7.2-netfilter-flowtable-bail-out-if-forward-path-cannot-b.patch",
+          "target/linux/generic/backport-6.18/706-03-v7.3-netfilter-flowtable-restore-ieee80211-forward-path.patch",
+          "target/linux/generic/backport-6.18/782-v7.0-net-dsa-eliminate-local-type-for-tc-policers.patch",
+          "target/linux/generic/backport-6.18/783-v7.2-net-dsa-pass-extack-to-dsa_switch_ops-port_policer_.patch",
+          "target/linux/generic/config-6.12",
+          "target/linux/generic/config-6.18",
+          "target/linux/generic/hack-6.12/650-netfilter-add-xt_FLOWOFFLOAD-target.patch",
+          "target/linux/generic/hack-6.18/650-netfilter-add-xt_FLOWOFFLOAD-target.patch",
+          "target/linux/generic/hack-6.18/721-net-add-packet-mangeling.patch",
+          "target/linux/generic/pending-6.12/708-01-netfilter-flowtable-teardown-direct-xmit-flows-when-the-fdb-entry-moves.patch",
+          "target/linux/generic/pending-6.18/699-netfilter-flowtable-set-out-ifindex-when-the-forward.patch",
+          "target/linux/generic/pending-6.18/708-00-net-mlx5e-ignore-FLOW_ACTION_PRIORITY-on-flowtable-offload.patch",
+          "target/linux/generic/pending-6.18/708-01-netfilter-flowtable-teardown-direct-xmit-flows-when-the-fdb-entry-moves.patch",
+          "target/linux/generic/pending-6.18/708-netfilter-flowtable-carry-a-priority-into-the-offload.patch",
+          "target/linux/generic/pending-6.18/709-01-netfilter-flowtable-fill-the-vlan-key-from-the-outermost-tag-only.patch",
+          "target/linux/generic/pending-6.18/709-02-netfilter-flowtable-advertise-the-vlan-match-in-used_keys.patch",
+          "target/linux/generic/pending-6.18/716-netfilter-conntrack-pick-up-a-TCP-flow-whose-SYN-was-never-answered.patch",
+          "target/linux/generic/pending-6.18/717-netfilter-flowtable-promote-a-flow-offloaded-in-one-direction-only.patch",
+          "target/linux/generic/pending-6.18/718-netfilter-nft_flow_offload-offload-a-TCP-flow-that-has-no-reply.patch",
+          "target/linux/generic/pending-6.18/719-01-8021q-add-vlan_dev_sw_netstats_rx_add-and-tx_add.patch",
+          "target/linux/generic/pending-6.18/719-02-netfilter-flowtable-update-upper-device-stats-in-the-fast-path.patch",
+          "target/linux/generic/pending-6.18/731-net-permit-ieee80211_ptr-even-with-no-CFG82111-suppo.patch",
+          "target/linux/generic/pending-6.18/736-04-net-ethernet-mediatek-fix-ppe-flow-accounting-for-L2.patch",
+          "target/linux/generic/pending-6.18/760-02-dsa-add-devlink-flash_update-callback-to-dsa.patch",
+          "target/linux/generic/pending-6.18/795-01-net-ethernet-mtk_ppe_offload-use-rhashtable_lookup_f.patch",
+          "target/linux/generic/pending-6.18/795-03-net-ethernet-mtk_ppe_offload-set-output-device-befor.patch",
+          "target/linux/generic/pending-6.18/795-07-net-ethernet-mtk_ppe_offload-use-DSA-queue-map-in-fl.patch",
+          "target/linux/generic/pending-6.18/795-09-net-ethernet-mtk_ppe-offload-flows-to-MxL862xx-switc.patch",
+          "target/linux/generic/pending-6.18/797-01-net-dsa-add-DCB-PCP-app-priority-mapping-ops.patch",
+          "target/linux/generic/pending-6.18/797-02-net-dsa-report-matchall-policer-statistics.patch",
+          "target/linux/generic/pending-6.18/797-03-net-dsa-forward-devlink-drop-trap-ops.patch",
+          "target/linux/generic/pending-6.18/797-04-net-dsa-forward-devlink-trap-group-and-policer-ops.patch",
+          "target/linux/lantiq/image/vr9.mk",
+          "target/linux/layerscape/armv8_64b/config-6.18",
+          "target/linux/mediatek/image/filogic.mk",
+          "target/linux/mpc85xx/image/p1010.mk",
+          "target/linux/qualcommax/config-6.18",
+          "target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6018-ess.dtsi",
+          "target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq8074-ess.dtsi",
+          "target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq8074-nss.dtsi",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_edma.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_edma.h",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe.h",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_acl.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_debugfs.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_flow.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_flow_offload.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_main.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_scheduler.c",
+          "target/linux/qualcommax/files/drivers/net/ethernet/qualcomm/qca_ppe_vlan.c",
+          "target/linux/qualcommax/files/include/dt-bindings/net/qualcomm,ipq-ppe.yaml",
+          "target/linux/qualcommax/files/include/linux/soc/qcom/qca_edma.h",
+          "target/linux/qualcommax/files/include/linux/soc/qcom/qca_ppe.h",
+          "target/linux/qualcommax/files/include/net/netfilter/nf_conntrack_dscpremark_ext.h",
+          "target/linux/qualcommax/files/include/uapi/linux/tc_act/tc_nss_mirred.h",
+          "target/linux/qualcommax/files/net/netfilter/nf_conntrack_dscpremark_ext.c",
+          "target/linux/qualcommax/patches-6.18/0930-arm64-dts-qcom-ipq8074-add-ramoops.patch",
+          "target/linux/qualcommax/patches-6.18/0931-arm64-dts-ipq8074-rename-nss-region.patch",
+          "target/linux/qualcommax/patches-6.18/0940-net-sched-sch_tbf-carry-the-queue-limit-into-the-offload.patch",
+          "target/linux/qualcommax/patches-6.18/0943-net-dsa-offer-a-flowtable-to-the-switch-before-the-conduit.patch",
+          "target/linux/qualcommax/patches-6.18/0944-net-dsa-keep-TX-VLAN-offload-off-under-a-tag-in-the-frame.patch",
+          "target/linux/qualcommax/patches-6.18/0952-net-ethernet-qca-add-ppe.patch",
+          "target/linux/qualcommax/patches-6.18/0953-net-ethernet-qca-add-EDMA.patch",
+          "target/linux/qualcommax/patches-6.18/0955-net-dsa-tag_oob-let-the-switch-claim-trapped-frames.patch",
+          "target/linux/qualcommax/patches-6.18/0959-net-dsa-install-the-VLANs-of-another-tree-s-port-as-foreign-VLANs.patch",
+          "target/linux/qualcommax/patches-6.18/0960-net-dsa-qca8k-put-bridge-FDB-entries-in-the-qca-8021q-VLAN.patch",
+          "target/linux/qualcommax/patches-6.18/0960-qca-nss-ecm-support-CORE.patch",
+          "target/linux/qualcommax/patches-6.18/0961-net-dsa-qca8k-let-the-VLAN-table-decide-egress-tagging-under-qca-8021q.patch",
+          "target/linux/qualcommax/patches-6.18/0961-qca-nss-ecm-support-PPPOE-offload.patch",
+          "target/linux/qualcommax/patches-6.18/0962-net-dsa-qca8k-report-port-statistics-from-the-MIB.patch",
+          "target/linux/qualcommax/patches-6.18/0963-net-dsa-retain-VLAN-upper-filtering-for-VLAN-taggers.patch",
+          "target/linux/qualcommax/patches-6.18/0963-qca-nss-ecm-support-netfilter-DSCPREMARK.patch",
+          "target/linux/qualcommax/patches-6.18/0964-net-dsa-qca8k-carry-802.1Q-uppers-of-qca-8021q-ports.patch",
+          "target/linux/qualcommax/patches-6.18/0966-qca-nss-ecm-bridge-Fixes-for-Bridge-VLAN-Filtering.patch",
+          "target/linux/qualcommax/patches-6.18/0969-qca-nss-clients-add-qdisc-support.patch",
+          "target/linux/qualcommax/patches-6.18/0971-net-ipmr-ip6mr-add-MFC-offload-hooks.patch",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/common.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/dsa.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/l2.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/l2.h",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/l3.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/lag.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/lag.h",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/pie.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/pie.h",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl-otto.h",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl838x.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl839x.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl930x.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/rtl931x.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/stats.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/stats.h",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/tc.c",
+          "target/linux/realtek/files-6.18/drivers/net/dsa/rtl83xx/tc.h",
+          "target/linux/realtek/files-6.18/drivers/net/ethernet/realtek/rtl838x_eth.c",
+          "target/linux/realtek/files-6.18/drivers/net/ethernet/realtek/rtl838x_eth.h",
+          "target/linux/realtek/files-6.18/drivers/net/phy/realtek/realtek_multiport.c",
+          "target/linux/realtek/patches-6.18/700-dsa-mdio-increase-max-ports-for-rtl839x-rtl931x.patch",
+          "toolchain/Makefile",
+          "toolchain/gcc/common.mk",
+          "tools/expat/Makefile",
+          "tools/mkimage/Makefile"
+        ],
+        "compare_status": "diverged",
+        "default_branch": "ppe-nss",
+        "files_source": "complete_git_trees",
+        "full_name": "JuliusBairaktaris/openwrt-ppe-nss",
+        "head": "7bff0fde0f4985907c71d9f02f1806d769520286",
+        "requested": "JuliusBairaktaris/openwrt-ppe-nss",
+        "tags": {
+          "archive/nss-edma-7.3-vendor-20261011": {
+            "commit_sha": "95979f48ef2e785108f1d8a8a3cde528c46b1ca5",
+            "object_sha": "95979f48ef2e785108f1d8a8a3cde528c46b1ca5"
+          },
+          "archive/nss-edma-rework-final": {
+            "commit_sha": "bf5e182d1bdee8eeeaec6c8d5422302718110d95",
+            "object_sha": "79a9a0c7d743460cb02186ac1f6f59f19ffb7c1f"
+          }
+        }
+      },
+      "luci": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "master",
+        "files_source": "compare",
+        "full_name": "openwrt/luci",
+        "head": "acda1ad6f1e6e9d487cd29f58cf166419826de55",
+        "requested": "openwrt/luci",
+        "tags": {}
+      },
+      "nss": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "edma-nss",
+        "files_source": "compare",
+        "full_name": "JuliusBairaktaris/nss-packages",
+        "head": "f06e232fb141c3edf19866740639ade0fd9caef7",
+        "requested": "JuliusBairaktaris/nss-packages",
+        "tags": {
+          "archive/edma-nss-7.3-feed-20261011": {
+            "commit_sha": "247a2217c1ab661b0fcfff9e90282297ccae39b5",
+            "object_sha": "247a2217c1ab661b0fcfff9e90282297ccae39b5"
+          },
+          "archive/edma-nss-final": {
+            "commit_sha": "f06e232fb141c3edf19866740639ade0fd9caef7",
+            "object_sha": "4c39d9d879345796702d10bd633f7bf6ea454285"
+          }
+        }
+      },
+      "packages": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "master",
+        "files_source": "compare",
+        "full_name": "openwrt/packages",
+        "head": "6fb711fed018a04030ffae4976030b7079c9a489",
+        "requested": "openwrt/packages",
+        "tags": {}
+      },
+      "routing": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "master",
+        "files_source": "compare",
+        "full_name": "openwrt/routing",
+        "head": "4b9891b9136259f93294a424507ed24c5e8c1cbd",
+        "requested": "openwrt/routing",
+        "tags": {}
+      },
+      "telephony": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "master",
+        "files_source": "compare",
+        "full_name": "openwrt/telephony",
+        "head": "5d68d53c160a325ea9d03fce393e051573bcc736",
+        "requested": "openwrt/telephony",
+        "tags": {}
+      },
+      "upstream_openwrt": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "main",
+        "files_source": "compare",
+        "full_name": "openwrt/openwrt",
+        "head": "1daf1410c575360bc4ec4896281f0140d528d34d",
+        "requested": "openwrt/openwrt",
+        "tags": {}
+      },
+      "video": {
+        "ahead_by": 0,
+        "archived": false,
+        "changed_files": [],
+        "compare_status": "identical",
+        "default_branch": "master",
+        "files_source": "compare",
+        "full_name": "openwrt/video",
+        "head": "6917907d4d6c670cf85be525d23216595655061d",
+        "requested": "openwrt/video",
+        "tags": {}
+      }
+    },
+    "versions": {
+      "curl": "8.22.0",
+      "dnsmasq": "2.93",
+      "hostapd": "2026-08-07/831364bf02710ad09c2f27d3efa92abeeb5634c0",
+      "kernel": "6.18.55",
+      "openssl": "3.5.9",
+      "tailscale": "1.102.3"
+    }
+  }
+}
