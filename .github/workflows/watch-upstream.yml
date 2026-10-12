@@ -1,0 +1,65 @@
+name: Watch OpenWrt upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: watch-upstream-state
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout configuration
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Read isolated state branch
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git init -b state state-branch
+          git -C state-branch remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          if git -C state-branch ls-remote --exit-code --heads origin state >/dev/null; then
+            git -C state-branch fetch --depth=1 origin state
+            git -C state-branch checkout -B state FETCH_HEAD
+          else
+            status=$?
+            if (( status != 2 )); then
+              exit "$status"
+            fi
+          fi
+
+      - name: Check, classify, and update one Issue if digest changed
+        id: check
+        run: |
+          set -euo pipefail
+          python3 scripts/watch/check_upstream.py \
+            --pins config/pins.json --state state-branch/state.json \
+            --output state-branch/state.json --notify \
+            --repository "$GITHUB_REPOSITORY" > watch-result.json
+          python3 -c 'import json,sys; print("changed=" + str(json.load(open("watch-result.json"))["changed"]).lower())' >> "$GITHUB_OUTPUT"
+
+      - name: Save notified digest and observed pins
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git -C state-branch config user.name 'github-actions[bot]'
+          git -C state-branch config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C state-branch add state.json
+          git -C state-branch commit -m 'Record upstream watch state'
+          git -C state-branch push origin HEAD:state

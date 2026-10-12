@@ -1,0 +1,17 @@
+{
+  "security_words": ["security", "cve-", "ghsa-", "vulnerability", "openssl", "openssh"],
+  "behavior_paths": [
+    "(^|/)base-files(/|$)",
+    "(^|/)sysupgrade(/|$)",
+    "(^|/)board_detect(/|$)",
+    "(^|/)netifd(/|$)",
+    "(^|/)wifi-scripts(/|$)",
+    "(^|/)hostapd/patches(/|$)",
+    "(^|/)qca-nss-[^/]+(/|$)",
+    "(^|/)qca-mcs(/|$)",
+    "^devices/common/config($|/)",
+    "(^|/)dnsmasq/(files|init)(/|$)",
+    "(^|/)procd/(files|init)(/|$)"
+  ],
+  "other_targets": ["realtek", "mediatek", "layerscape", "ramips"]
+}

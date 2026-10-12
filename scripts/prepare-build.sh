@@ -13,9 +13,10 @@ device_dir="$BUILDER_REPO/devices/ipq807x-1g"
 
 cd -- "$OPENWRT_DIR"
 [[ -f feeds.conf ]] || cp feeds.conf.default feeds.conf
-# Same-name replacement, as in the builder; this feed is required by NSS Wi-Fi.
-sed -i -E '/^src-[^[:space:]]+[[:space:]]+nss[[:space:]]/d' feeds.conf
-printf '%s\n' 'src-git nss https://github.com/JuliusBairaktaris/nss-packages.git;edma-nss' >> feeds.conf
+# Keep the builder's feed replacement; pins-used.json is the workflow input.
+python3 "$repo_dir/scripts/pins.py" feeds \
+  --pins "${PINS_FILE:-$repo_dir/config/pins.json}" --set "${PIN_SET:-candidate}" \
+  --config feeds.conf
 ./scripts/feeds update nss
 ./scripts/feeds install -a -p nss
 ./scripts/feeds update -a

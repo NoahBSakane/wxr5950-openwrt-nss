@@ -1,0 +1,16 @@
+# apk list -I 由来の名前を確認して追記する。ここは manifest と packages.txt からの初期雛形。
+# 実機の完全なインストール一覧と同一とは限らない。
+dnsmasq
+hostapd-common
+wpad-openssl
+openssl-util
+libopenssl3
+curl
+tailscale
+openssh-server
+kmod-qca-mcs
+kmod-qca-nss-drv
+kmod-qca-nss-ecm
+kmod-qca-ppe-nss
+netifd
+procd
