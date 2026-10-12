@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-12T06:04:44.868037+00:00",
+  "checked_at": "2026-10-12T06:10:34.893806+00:00",
   "events": [
     {
       "class": "R",
@@ -1727,108 +1727,10 @@
       "kind": "pin_gap",
       "pin": "11d8ea6810357f68c0557b0a532ee53f10d40938",
       "repo": "JuliusBairaktaris/Qualcommax_NSS_Builder"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-7c3j-f7w2-p8f6",
-      "installed_matches": [
-        "sed"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "mdnsd: Stack buffer overflow in DNS PTR query",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-7c3j-f7w2-p8f6"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-9558-77jp-g3fw",
-      "installed_matches": [
-        "sed"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "EAD Integer Underflow → Pre-Auth Denial of Service",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-9558-77jp-g3fw"
-    },
-    {
-      "class": "S",
-      "id": "GHSA-cp32-65v4-cp73",
-      "installed_matches": [],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "ubusd: heap buffer overflow",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-cp32-65v4-cp73"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-h427-frpr-7cqr",
-      "installed_matches": [
-        "sed"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "ltq-ptm: local privilege escalation",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-h427-frpr-7cqr"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-hhmc-92hw-535f",
-      "installed_matches": [
-        "dnsmasq",
-        "luci",
-        "sed"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "odhcpd/LuCI: unauthenticated DHCPv6 client can inject lease-file lines via FQDN hostname → stored XSS in the LuCI admin UI",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-hhmc-92hw-535f"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-jw28-hxcm-j934",
-      "installed_matches": [
-        "procd"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "procd: Command execution via PATH environment variable filter bypass",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-jw28-hxcm-j934"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-jw5r-xhf5-2xcq",
-      "installed_matches": [
-        "curl",
-        "luci"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "ACL bypass and arbitrary root file read via cgi-io cgi-download",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-jw5r-xhf5-2xcq"
-    },
-    {
-      "class": "要オーナー確認",
-      "id": "GHSA-mpgh-v658-jqv5",
-      "installed_matches": [
-        "sed"
-      ],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "mdnsd: Stack buffer overflow in IPv6 reverse DNS lookup",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-mpgh-v658-jqv5"
-    },
-    {
-      "class": "S",
-      "id": "GHSA-rcc6-v4r6-gj4m",
-      "installed_matches": [],
-      "kind": "ghsa",
-      "patch_status": "未判定",
-      "summary": "jsonpath: Memory leak when processing strings, labels, and regexp tokens",
-      "url": "https://github.com/openwrt/openwrt/security/advisories/GHSA-rcc6-v4r6-gj4m"
     }
   ],
   "issue_number": 1,
-  "notified_digest": "bdae4fa809cd807192ab589186f866c69c6507c53ab069decd1600c84480bf76",
+  "notified_digest": "7df79594b70e1008bdd7399106de25bb73a01b47b6a90a1e9374cbe40904797a",
   "pins": {
     "candidate": {
       "builder": {
@@ -1894,6 +1796,7 @@
         "sha": "016581e7911a7bf273b4fc072fc5d133d13a5409"
       },
       "builder_ref": "016581e7911a7bf273b4fc072fc5d133d13a5409",
+      "built_at": "2026-10-09T07:14:11Z",
       "feeds": {
         "luci": {
           "repo": "openwrt/luci",
@@ -1946,6 +1849,7 @@
   },
   "schema": 1,
   "snapshot": {
+    "built_at": "2026-10-09T07:14:11Z",
     "ghsa_ids": [
       "GHSA-7c3j-f7w2-p8f6",
       "GHSA-9558-77jp-g3fw",
@@ -1957,6 +1861,7 @@
       "GHSA-mpgh-v658-jqv5",
       "GHSA-rcc6-v4r6-gj4m"
     ],
+    "known_ghsa_count": 9,
     "openwrt_main_sha": "1daf1410c575360bc4ec4896281f0140d528d34d",
     "repos": {
       "builder": {
