@@ -5,6 +5,55 @@ from pathlib import Path
 
 RULES = json.loads((Path(__file__).with_name("rules.json")).read_text())
 ORDER = {"N": 0, "B": 1, "R": 2, "S": 3, "要オーナー確認": 4}
+GENERIC_ADVISORY_NAMES = {"sed", "awk", "ip", "curl", "luci"}
+
+
+def exact_word(text, name):
+    """Match a complete package word; letters, digits and hyphens stay together."""
+    return bool(re.search(r"(?<![a-z0-9-])" + re.escape(name) + r"(?![a-z0-9-])",
+                          text, re.IGNORECASE))
+
+
+def advisory_matches(item, installed):
+    summary = item.get("summary") or ""
+    targets = {vulnerability.get("package", {}).get("name", "").lower()
+               for vulnerability in item.get("vulnerabilities", [])
+               if isinstance(vulnerability.get("package"), dict)}
+    targets.discard("")
+    if not targets:
+        # OpenWrt often titles advisories "package: problem"; a slash may
+        # separate two affected packages, as in "odhcpd/LuCI: ...".
+        heading = re.match(r"^\s*([a-z0-9][a-z0-9+._/-]*):\s", summary, re.I)
+        if heading:
+            targets = set(heading.group(1).lower().split("/"))
+    leading = re.match(r"^\s*([a-z0-9][a-z0-9-]*)", summary, re.I)
+    first_word = leading.group(1).lower() if leading else ""
+
+    def matches(name, target):
+        name = name.lower()
+        if name == target:
+            return True
+        if target == "hostapd" and (name == "hostapd-common" or name.startswith("wpad-")):
+            return True
+        if target == "openssh" and name.startswith("openssh-"):
+            return True
+        return False
+
+    matched = []
+    for name in installed:
+        if targets:
+            relevant = any(matches(name, target) for target in targets)
+        elif name.lower() in GENERIC_ADVISORY_NAMES:
+            relevant = name.lower() == first_word
+        else:
+            relevant = exact_word(summary, name)
+            if name.lower() == "hostapd-common" or name.lower().startswith("wpad-"):
+                relevant = relevant or exact_word(summary, "hostapd")
+            if name.lower().startswith("openssh-"):
+                relevant = relevant or exact_word(summary, "openssh")
+        if relevant:
+            matched.append(name)
+    return sorted(targets), sorted(matched)
 
 
 def package_directory(repo, path):

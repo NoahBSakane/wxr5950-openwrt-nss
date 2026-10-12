@@ -9,7 +9,8 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from classify import classify_change, installed_match, package_directory, security_severity
+from classify import (classify_change, installed_match, package_directory,
+                      security_severity, advisory_matches)
 
 ROOT = Path(__file__).resolve().parents[2]
 ISSUE_TITLE = "[upstream-watch] WXR-5950AX12 upstream changes"
@@ -172,30 +173,37 @@ def repository_snapshot(api, requested_repo, pinned_sha, installed, previous):
     return result, changes
 
 
-def advisories(api, previous_seen, installed):
+def advisory_time(value):
+    if not value:
+        raise ValueError("advisory is missing published_at or updated_at")
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def advisories(api, built_at, installed):
     found = pages(api, "repos/openwrt/openwrt/security-advisories")
     by_id = {item["ghsa_id"]: item for item in found}
     changes = []
-    for ghsa_id in sorted(set(by_id) - set(previous_seen)):
+    known = 0
+    baseline = advisory_time(built_at)
+    for ghsa_id in sorted(by_id):
         item = by_id[ghsa_id]
+        dates = [advisory_time(item[key]) for key in ("published_at", "updated_at")
+                 if item.get(key)]
+        if not dates:
+            raise ValueError(f"advisory {ghsa_id} has no publication/update date")
+        if max(dates) < baseline:
+            known += 1
+            continue
         summary = item.get("summary") or ""
-        description = item.get("description") or ""
-        haystack = (summary + " " + description).lower()
-        aliases = {"openssl": ("openssl",), "openssh": ("openssh",),
-                   "hostapd": ("hostapd", "wpad-"), "dnsmasq": ("dnsmasq",),
-                   "tailscale": ("tailscale",), "curl": ("curl",)}
-        matches = sorted(name for name in installed
-                         if name.lower() in haystack or any(
-                             term in haystack and name.startswith(prefix)
-                             for term, prefixes in aliases.items() for prefix in prefixes
-                             if name.startswith(prefix)))
+        targets, matches = advisory_matches(item, installed)
         changes.append({
             "kind": "ghsa", "id": ghsa_id, "summary": summary,
             "url": item.get("html_url"), "installed_matches": matches,
+            "target_packages": targets,
             "class": "要オーナー確認" if matches else "S",
             "patch_status": "未判定",
         })
-    return sorted(by_id), changes
+    return sorted(by_id), changes, known
 
 
 def build_snapshot(api, pins, prior, installed):
@@ -228,11 +236,12 @@ def build_snapshot(api, pins, prior, installed):
         if current != pinned:
             events.append({"kind": "version", "component": name, "pinned": pinned,
                            "upstream": current, "class": "要オーナー確認"})
-    seen, new_advisories = advisories(api, prior.get("seen_ghsa", []), installed)
+    seen, new_advisories, known = advisories(api, pins["deployed"]["built_at"], installed)
     events += new_advisories
     return {
         "repos": repos, "openwrt_main_sha": heads["openwrt/openwrt"],
         "versions": current_versions, "ghsa_ids": seen,
+        "known_ghsa_count": known, "built_at": pins["deployed"]["built_at"],
     }, events
 
 
@@ -241,26 +250,76 @@ def digest(snapshot):
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 
+def markdown_cell(value):
+    return str(value or "—").replace("\n", " ").replace("\r", " ").replace("|", "\\|")
+
+
 def issue_body(snapshot, events, value):
-    lines = ["候補 pins と上流の週次比較です。実機への書き込みやビルドは行いません。",
-             "", f"Digest: `{value}`", "",
-             "分類: S=セキュリティ、B=当方に効く修正、R=挙動要確認、N=他機種のみ。未分類は要オーナー確認です。",
-             "GHSA の修正済み判定は自動で行いません。", ""]
-    for event in events[:100]:
-        shown = dict(event)
-        if "paths" in shown and len(shown["paths"]) > 20:
-            shown["path_count"] = len(shown["paths"])
-            shown["paths"] = shown["paths"][:20]
-        line = f"- **{event['class']}** `{event['kind']}`: `{json.dumps(shown, ensure_ascii=False, sort_keys=True)}`"
-        if sum(map(len, lines)) + len(line) > 55000:
-            lines.append("- 詳細は state ブランチの JSON を確認してください。")
-            break
-        lines.append(line)
-    if len(events) > 100:
-        lines.append(f"- 残り {len(events)-100} 件は state JSON を確認してください。")
-    if not events:
-        lines.append("- 分類対象の新規事象はありません。")
-    lines += ["", f"観測した上流 SHA: `{snapshot['openwrt_main_sha']}`"]
+    classes = ("S", "B", "R", "N", "要オーナー確認")
+    labels = {"S": "セキュリティ", "B": "当方に効く修正", "R": "挙動要確認",
+              "N": "他機種のみ", "要オーナー確認": "要確認"}
+    advisories_now = [event for event in events if event["kind"] == "ghsa"]
+    pin_repos = {event["repo"] for event in events if event["kind"] == "pin_gap"}
+    decision_count = sum(bool(event["installed_matches"]) for event in advisories_now)
+    event_counts = {grade: 0 for grade in classes}
+    paths = {grade: [] for grade in classes}
+    for event in events:
+        event_counts[event["class"]] += 1
+        if event["kind"] == "files":
+            paths_for_repo = event.get("paths", [])
+            for grade, path in paths_for_repo:
+                paths[grade].append(f"{event['repo']}: {path}")
+
+    lines = [f"新規の勧告 {len(advisories_now)} 件（要判断 {decision_count} 件）、"
+             f"ピン差 {len(pin_repos)} リポジトリ。",
+             f"実機ビルド {snapshot.get('built_at', '不明')} 以降の公開・更新を新規とします。",
+             f"既知(対象外): {snapshot.get('known_ghsa_count', 0)} 件", "",
+             "| 分類 | 内容 | 事象 | パス |", "| --- | --- | ---: | ---: |"]
+    for grade in classes:
+        lines.append(f"| {grade} | {labels[grade]} | {event_counts[grade]} | {len(paths[grade])} |")
+
+    lines += ["", "### 新規の勧告", "",
+              "修正済みかどうかは未判定です。対象パッケージとインストール済み名は別に示します。", ""]
+    if advisories_now:
+        lines += ["| ID | 要約 | 対象パッケージ | 一致したインストール済み名 | URL |",
+                  "| --- | --- | --- | --- | --- |"]
+        for event in advisories_now:
+            url = event.get("url") or ""
+            link = f"[開く]({url})" if url.startswith("https://") else "—"
+            lines.append("| " + " | ".join((
+                markdown_cell(event["id"]), markdown_cell(event["summary"]),
+                markdown_cell(", ".join(event.get("target_packages", []))),
+                markdown_cell(", ".join(event["installed_matches"])), link)) + " |")
+    else:
+        lines.append("該当なし。")
+
+    lines += ["", "### 変更パス", "",
+              "| 分類 | 件数 | 代表（最大3件） |", "| --- | ---: | --- |"]
+    for grade in classes:
+        examples = "<br>".join(markdown_cell(path) for path in paths[grade][:3]) or "—"
+        lines.append(f"| {grade} | {len(paths[grade])} | {examples} |")
+
+    other = [event for event in events if event["kind"] not in {"ghsa", "files"}]
+    lines += ["", "### その他の変化", ""]
+    if not other:
+        lines.append("該当なし。")
+    else:
+        for event in other:
+            kind = event["kind"]
+            repo = markdown_cell(event.get("repo", event.get("component", "")))
+            if kind == "diverged" and event["repo"] == "JuliusBairaktaris/openwrt-ppe-nss":
+                detail = "リベース済み。既知の分岐です。"
+            elif kind == "diverged":
+                detail = "履歴が分岐しています。"
+            elif kind == "pin_gap":
+                detail = "候補ピンと上流先端の SHA に差があります。"
+            elif kind == "version":
+                detail = f"候補 {event['pinned']} / 上流 {event['upstream']}"
+            else:
+                detail = f"{kind} を検出しました。"
+            lines.append(f"- **{event['class']}** {repo}: {markdown_cell(detail)}")
+    lines += ["", f"観測した上流 SHA: `{snapshot['openwrt_main_sha']}`",
+              f"Digest: `{value}`"]
     return "\n".join(lines)
 
 

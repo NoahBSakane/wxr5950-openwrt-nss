@@ -7,8 +7,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/watch"))
-from classify import classify, classify_change, installed_match, package_directory, security_severity
-from check_upstream import advisories, complete_tree_diff, digest, notify, repository_snapshot
+from classify import (advisory_matches, classify, classify_change, installed_match,
+                      package_directory, security_severity)
+from check_upstream import advisories, complete_tree_diff, digest, issue_body, notify, repository_snapshot
 
 spec = importlib.util.spec_from_file_location("pins", ROOT / "scripts/pins.py")
 pins = importlib.util.module_from_spec(spec)
@@ -18,6 +19,7 @@ A = "a" * 40
 B = "b" * 40
 C = "c" * 40
 D = "d" * 40
+BUILT_AT = "2026-10-09T07:14:11Z"
 
 
 class WatchTests(unittest.TestCase):
@@ -74,29 +76,74 @@ class WatchTests(unittest.TestCase):
         self.assertTrue({"renamed", "default_branch", "tag_moved", "diverged"} <= kinds)
         self.assertEqual(len([e for e in events if e["kind"] == "tag_moved"]), 1)
 
-    def test_new_ghsa_deduplicated_and_never_assumed_patched(self):
+    def test_new_ghsa_baseline_deduplicated_and_never_assumed_patched(self):
         def api(path):
             self.assertEqual(path, "repos/openwrt/openwrt/security-advisories?per_page=100&page=1")
             return [{"ghsa_id": "GHSA-abc", "summary": "dnsmasq issue",
+                     "published_at": BUILT_AT,
                      "description": "", "vulnerabilities": [{"patched_versions": ""}]},
                     {"ghsa_id": "GHSA-abc", "summary": "dnsmasq issue",
+                     "published_at": BUILT_AT,
                      "description": "", "vulnerabilities": []},
-                    {"ghsa_id": "GHSA-old", "summary": "old issue"}]
+                    {"ghsa_id": "GHSA-old", "summary": "old issue",
+                     "published_at": "2026-10-08T00:00:00Z"},
+                    {"ghsa_id": "GHSA-updated", "summary": "curl: fix",
+                     "published_at": "2026-10-08T00:00:00Z",
+                     "updated_at": "2026-10-10T00:00:00Z"}]
 
-        seen, events = advisories(api, ["GHSA-old"], {"dnsmasq"})
-        self.assertEqual(seen, ["GHSA-abc", "GHSA-old"])
-        self.assertEqual(len(events), 1)
+        seen, events, known = advisories(api, BUILT_AT, {"dnsmasq", "curl"})
+        self.assertEqual(seen, ["GHSA-abc", "GHSA-old", "GHSA-updated"])
+        self.assertEqual(known, 1)
+        self.assertEqual(len(events), 2)
         self.assertEqual(events[0]["class"], "要オーナー確認")
         self.assertEqual(events[0]["patch_status"], "未判定")
-        self.assertEqual(advisories(api, seen, {"dnsmasq"})[1], [])
+        self.assertEqual(events[1]["installed_matches"], ["curl"])
 
     def test_ghsa_component_alias_matches_installed_variant(self):
         def api(path):
             return [{"ghsa_id": "GHSA-hostapd", "summary": "hostapd issue",
+                     "published_at": BUILT_AT,
                      "description": "", "vulnerabilities": []}]
-        _, events = advisories(api, [], {"wpad-openssl", "hostapd-common"})
+        _, events, _ = advisories(api, BUILT_AT, {"wpad-openssl", "hostapd-common"})
         self.assertEqual(events[0]["installed_matches"],
                          ["hostapd-common", "wpad-openssl"])
+
+    def test_advisory_matching_uses_targets_and_complete_words(self):
+        installed = {"sed", "awk", "ip", "curl", "luci", "dnsmasq", "wpad-openssl"}
+        for summary in ("mdnsd: Stack buffer overflow in DNS PTR query",
+                        "unauthenticated request used by attacker",
+                        "cgi-download: curl used to fetch a file"):
+            with self.subTest(summary=summary):
+                self.assertEqual(advisory_matches({"summary": summary}, installed)[1], [])
+        self.assertEqual(advisory_matches({"summary": "curl: buffer overflow",
+                                           "description": "sed used"}, installed)[1], ["curl"])
+        self.assertEqual(advisory_matches({"summary": "curl issue",
+                                           "vulnerabilities": [{"package": {"name": "dnsmasq"}}]},
+                                          installed), (["dnsmasq"], ["dnsmasq"]))
+        self.assertEqual(advisory_matches({"summary": "odhcpd/LuCI: stored XSS"}, installed)[1],
+                         ["luci"])
+        self.assertEqual(advisory_matches({"summary": "hostapd: issue"}, installed)[1],
+                         ["wpad-openssl"])
+
+    def test_issue_body_is_readable_and_limits_path_examples(self):
+        events = [
+            {"kind": "ghsa", "class": "要オーナー確認", "id": "GHSA-new",
+             "summary": "curl: problem", "target_packages": ["curl"],
+             "installed_matches": ["curl"], "url": "https://example.invalid/advisory"},
+            {"kind": "files", "class": "R", "repo": "owner/repo",
+             "paths": [("R", f"path/{number}") for number in range(398)]},
+            {"kind": "pin_gap", "class": "要オーナー確認", "repo": "owner/repo"},
+            {"kind": "diverged", "class": "R", "repo": "JuliusBairaktaris/openwrt-ppe-nss"},
+        ]
+        body = issue_body({"openwrt_main_sha": A, "built_at": BUILT_AT,
+                           "known_ghsa_count": 9}, events, B)
+        self.assertIn("新規の勧告 1 件（要判断 1 件）、ピン差 1 リポジトリ", body)
+        self.assertIn("既知(対象外): 9 件", body)
+        self.assertIn("| R | 398 |", body)
+        self.assertIn("path/2", body)
+        self.assertNotIn("path/3", body)
+        self.assertIn("リベース済み。既知", body)
+        self.assertNotIn("{\"kind\"", body)
 
     def test_issue_reused_after_state_loss(self):
         calls = []

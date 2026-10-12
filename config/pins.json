@@ -2,6 +2,7 @@
   "schema": 1,
   "deployed": {
     "source_run": 37897862006,
+    "built_at": "2026-10-09T07:14:11Z",
     "observed_at": "2026-10-12T03:35:49Z",
     "ref": "c55808ed65f74e8797fe8b1d7b727cc0ba4eb276",
     "fork": {"repo": "JuliusBairaktaris/openwrt-ppe-nss", "sha": "c55808ed65f74e8797fe8b1d7b727cc0ba4eb276"},

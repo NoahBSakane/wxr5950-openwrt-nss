@@ -35,7 +35,7 @@ Buffalo WXR-5950AX12 専用のファームウェアを、[JuliusBairaktaris/open
 `wxr-5950ax12-nss-edma-<fork SHA先頭12桁>-<builder SHA先頭12桁>` として30日間保存します。
 
 - `*buffalo_wxr-5950ax12*`：対象機種のファームウェアなど
-- `sha256sums`：上流ビルドが生成したチェックサム一覧（未収集ファイルの項目を含む場合があります）
+- `sha256sums`：上流ビルドが生成したチェックサム一覧に `pins-used.json` の SHA-256 を追記したもの（未収集ファイルの項目を含む場合があります）
 - `*.manifest`：イメージの組み込みパッケージ一覧
 - `config.buildinfo`、`feeds.buildinfo`、`version.buildinfo`：設定・feeds・バージョン情報
 - `fork-commit.txt`、`builder-commit.txt`：実際に取得した両リポジトリの完全なSHA
@@ -79,9 +79,9 @@ mdns-repeater=m
 
 ## 上流の監視と通知
 
-`.github/workflows/watch-upstream.yml` は月曜 00:00 UTC（日本時間 09:00）と手動で `scripts/watch/check_upstream.py` を起動します。各リポジトリの正式名・アーカイブ状態・既定ブランチ・`archive/*` タグのオブジェクトとコミット・候補 SHA と先端の compare status を読み取ります。`diverged` はリベースまたは強制 push の要確認として扱います。feed の変更ファイルは `config/packages.txt` と `config/installed-watch.txt` の名前を使って、対応するパッケージディレクトリを抽出します。後者は実機の `apk list -I` による名前一覧を反映するための雛形で、現状は完全な実機一覧ではありません。
+`.github/workflows/watch-upstream.yml` は月曜 00:00 UTC（日本時間 09:00）と手動で `scripts/watch/check_upstream.py` を起動します。各リポジトリの正式名・アーカイブ状態・既定ブランチ・`archive/*` タグのオブジェクトとコミット・候補 SHA と先端の compare status を読み取ります。フォークの `diverged` は既知のリベースとして説明し、他の分岐は履歴確認の対象とします。feed の変更ファイルは `config/packages.txt` と `config/installed-watch.txt` の名前を使って、対応するパッケージディレクトリを抽出します。後者は実機の `apk list -I` による名前一覧を反映するための雛形で、現状は完全な実機一覧ではありません。
 
-OpenWrt の新規 GHSA は ID で重複排除し、要約・説明にインストール済みパッケージ名が現れた場合は「要オーナー確認」にします。`patched_versions` が空でも修正済みとは判断しません。カーネル 6.18.y、OpenSSL、dnsmasq、hostapd、tailscale、curl は OpenWrt main と packages feed の Makefile から版を読み、候補 pins の版と比べます。比較先がフォークの実際のビルド版とは限らないため、版差は判断材料です。
+OpenWrt の GHSA は ID で重複排除し、実機ビルド時刻 `config/pins.json` の `deployed.built_at` 以降に公開・更新されたものだけを新規として表示します。それ以前のものは件数のみ示します。対象パッケージが明示されていればその名前を優先し、なければ要約中の完全な単語でインストール済み名と照合します。`sed`・`curl`・`luci` など一般語になり得る名前は、対象パッケージが不明な場合、要約の先頭語だけで照合します。Issue 本文は分類別件数、勧告の一覧、分類別パス件数と代表３件までを表示します。`patched_versions` が空でも修正済みとは判断しません。カーネル 6.18.y、OpenSSL、dnsmasq、hostapd、tailscale、curl は OpenWrt main と packages feed の Makefile から版を読み、候補 pins の版と比べます。比較先がフォークの実際のビルド版とは限らないため、版差は判断材料です。
 
 `scripts/watch/rules.json` のパス規則で S（セキュリティ）、B（インストール済みに効く修正）、R（挙動変更の確認）、N（他機種だけ）に分類します。規則にないパスは「要オーナー確認」とし、取りこぼしが疑われる場合も表示します。状態は孤立した `state` ブランチの `state.json` に pins・観測結果・通知済みダイジェスト・Issue 番号として保存します。ダイジェストが前回通知と異なるときだけ、公開リポジトリの同じ Issue を作成または更新します。ntfy や独自の秘密は使いません。API 取得に失敗した場合は通知済み状態を更新しません。
 

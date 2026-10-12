@@ -171,6 +171,7 @@ jobs:
           cp -- openwrt/fork-commit.txt openwrt/builder-commit.txt artifacts/
           cp -- config/packages.txt artifacts/
           cp -- pins-used.json artifacts/
+          (cd artifacts && sha256sum -b pins-used.json >> sha256sums)
           # Keep repository paths: target kmods and feed packages can share names.
           # Include all generated APKs, including =m packages and their dependencies.
           apk_count=0
