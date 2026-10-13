@@ -1,0 +1,3 @@
+# Enable the BusyBox diff applet in the pinned fork.
+CONFIG_BUSYBOX_CUSTOM=y
+CONFIG_BUSYBOX_CONFIG_DIFF=y

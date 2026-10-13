@@ -1,0 +1,10 @@
+#!/bin/sh
+# /etc/hotplug.d/block/99-faultlog-usb; USB path is not live-tested.
+# A mount event may precede mount completion; mount check in library is authoritative.
+case "$ACTION" in
+  add|mount)
+    "${FAULTLOG_MIGRATE_CMD:-/usr/sbin/faultlog-migrate}" >/dev/null 2>&1 || :
+    "${OUTBOX_MIGRATE_CMD:-/usr/sbin/outbox-migrate}" >/dev/null 2>&1 || :
+    "${STATE_MIGRATE_CMD:-/usr/sbin/state-migrate}" >/dev/null 2>&1 || :
+    ;;
+esac

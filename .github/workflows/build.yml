@@ -150,6 +150,14 @@ jobs:
           set -euo pipefail
           make -j"$(nproc)" || make -j1 V=s
 
+      - name: Verify baked files in build rootfs
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          python3 scripts/bake_files.py verify-rootfs \
+            --files files --build-dir openwrt/build_dir \
+            --hashes artifacts/baked-files.sha256
+
       - name: Collect firmware, APK packages and build metadata
         run: |
           set -euo pipefail

@@ -1,0 +1,45 @@
+#!/bin/sh
+# Called only after every notify destination fails. Does not affect notify's exit code.
+. "${AUTOMATION_LIB:-/usr/lib/automation-lib.sh}" || exit 0
+. "${OUTBOX_LIB:-/usr/lib/outbox-lib.sh}" || exit 0
+[ $# -ge 1 ] && [ -n "$1" ] || exit 0
+body=$(printf '%s\n' "$1" | faultlog_redact | cut -c1-500)
+prio=${2:-3}; title=$(faultlog_clean_field "${3:-Notice}")
+case "$prio" in 1|2|3|4|5) ;; *) prio=3;; esac
+[ -n "$body" ] || exit 0
+if ! outbox_lock; then
+  # A flush may hold the lock during network I/O. An atomic independent file
+  # preserves this notice; flush groups it with the same content hash later.
+  dir=$(outbox_dir)
+  mkdir -p "$dir" || exit 0
+  key=$(printf '%s\n%s\n%s\n' "$prio" "$title" "$body" | sha256sum | cut -d' ' -f1)
+  temp=$(mktemp "$dir/.enqueue.XXXXXX") || exit 0
+  { printf 'Count : 1\nGenerated : %s\nPriority : %s\nTitle : %s\n\n' "$(ts_long)" "$prio" "$title"; printf '%s\n' "$body"; } > "$temp"
+  mv "$temp" "$dir/$key-pending-$$" || rm -f "$temp"
+  exit 0
+fi
+printf '%s\n' "$$" > "$OUTBOX_LOCK/pid"
+trap 'outbox_unlock' EXIT HUP INT TERM
+faultlog_usb_ready && outbox_migrate || :
+dir=$(outbox_dir)
+mkdir -p "$dir" || exit 0
+key=$(printf '%s\n%s\n%s\n' "$prio" "$title" "$body" | sha256sum | cut -d' ' -f1)
+file=$dir/$key
+if [ -f "$file" ]; then
+  count=$(sed -n 's/^Count : //p' "$file" | sed -n '1p')
+  case "$count" in ''|*[!0-9]*) count=1;; esac
+  count=$((count + 1))
+  temp=$(mktemp "$dir/.enqueue.XXXXXX") || exit 0
+  if sed "1s/^Count : .*/Count : $count/" "$file" > "$temp"; then
+    mv "$temp" "$file" || rm -f "$temp"
+  else
+    rm -f "$temp"
+  fi
+else
+  temp=$(mktemp "$dir/.enqueue.XXXXXX") || exit 0
+  { printf 'Count : 1\nGenerated : %s\nPriority : %s\nTitle : %s\n\n' "$(ts_long)" "$prio" "$title"; printf '%s\n' "$body"; } > "$temp"
+  mv "$temp" "$file" || rm -f "$temp"
+fi
+outbox_prune "$dir"
+"${FAULTLOG_CMD:-/usr/sbin/faultlog}" outbox warn 'action=enqueue result=stored' || :
+exit 0

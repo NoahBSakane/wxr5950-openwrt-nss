@@ -1,0 +1,65 @@
+#!/bin/sh
+# DNS-only bounded capture. USB behavior has not been live-tested.
+. "${AUTOMATION_LIB:-/usr/lib/automation-lib.sh}" || exit 1
+. "${FAULTLOG_LIB:-/usr/lib/faultlog-lib.sh}" || exit 1
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+LOCK=${EVIDENCE_LOCK:-/tmp/evidence-capture.lock}
+tag=$(printf '%s' "${1:-manual}" | tr -cd 'A-Za-z0-9_-' | cut -c1-40)
+[ -n "$tag" ] || tag=manual
+seconds=${2:-60}
+case "$seconds" in ''|*[!0-9]*) seconds=60;; esac
+[ "$seconds" -le 60 ] || seconds=60
+[ "$seconds" -ge 1 ] || seconds=1
+if ! faultlog_usb_ready; then
+  "$FAULTLOG_CMD" capture warn "action=capture result=skipped reason=no_usb tag=$tag" || :
+  exit 0
+fi
+if ! mkdir "$LOCK" 2>/dev/null; then
+  if [ -r "$LOCK/pid" ]; then
+    read -r oldpid < "$LOCK/pid"
+    case "$oldpid" in ''|*[!0-9]*) exit 1;; esac
+    kill -0 "$oldpid" 2>/dev/null && { "$FAULTLOG_CMD" capture warn 'action=capture result=skipped reason=busy' || :; exit 1; }
+    rm -f "$LOCK/pid"
+    rmdir "$LOCK" 2>/dev/null || exit 1
+    mkdir "$LOCK" 2>/dev/null || exit 1
+  else exit 1; fi
+fi
+printf '%s\n' "$$" > "$LOCK/pid"
+child=
+cleanup() {
+  [ -z "$child" ] || { kill "$child" 2>/dev/null || :; wait "$child" 2>/dev/null || :; }
+  rm -f "$LOCK/pid"
+  rmdir "$LOCK" 2>/dev/null || :
+}
+trap 'cleanup' EXIT HUP INT TERM
+iface=${EVIDENCE_WAN_IFACE:-}
+if [ -z "$iface" ]; then
+  iface=$(ubus call network.interface.wan status 2>/dev/null | jsonfilter -e '@.l3_device' 2>/dev/null)
+fi
+case "$iface" in ''|*[!A-Za-z0-9_.:@-]*)
+  "$FAULTLOG_CMD" capture err "action=capture result=failed reason=no_interface tag=$tag" || :
+  exit 1;;
+esac
+pcap=$FAULTLOG_USB_MOUNT/pcap
+mkdir -p "$pcap" || exit 1
+# Prune to 412 MiB before a 100 MiB ring is written. Each capture costs O(B).
+faultlog_prune_files "$pcap" 10000 432013312
+file=$pcap/$(ts_file)-$tag-$$.pcap
+tcpdump -i "$iface" -s 128 -C 20 -W 5 -w "$file" 'port 53' >/dev/null 2>&1 &
+child=$!
+"$FAULTLOG_CMD" capture info "action=capture result=started tag=$tag seconds=$seconds" || :
+"${EVIDENCE_SLEEP_CMD:-sleep}" "$seconds"
+kill "$child" 2>/dev/null || :
+wait "$child" 2>/dev/null || :
+child=
+faultlog_prune_files "$pcap" 10000 536870912
+found=0
+for part in "$file"*; do
+  [ -s "$part" ] && found=1
+done
+if [ "$found" -eq 0 ]; then
+  "$FAULTLOG_CMD" capture err "action=capture result=failed reason=no_pcap tag=$tag" || :
+  exit 1
+fi
+"$FAULTLOG_CMD" capture info "action=capture result=completed tag=$tag" || :
+exit 0

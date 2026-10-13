@@ -1,0 +1,65 @@
+#!/bin/sh
+# DuckDNS: retry transient errors, notify once per failure incident and once on recovery.
+# cron: */30 * * * *; also WAN ifup. Never print a request URL or credentials.
+# shellcheck source=/dev/null
+[ -r "${DUCKDNS_CONF:-/etc/duckdns.conf}" ] && . "${DUCKDNS_CONF:-/etc/duckdns.conf}"
+[ -n "$DUCKDNS_DOMAIN" ] && [ -n "$DUCKDNS_TOKEN" ] || { logger -t duckdns -p user.err 'not configured'; exit 1; }
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+NOTIFY_CMD=${NOTIFY_CMD:-/usr/sbin/notify}
+STATE=${DUCKDNS_STATE:-/tmp/duckdns-update.state}
+LAST=${DUCKDNS_LAST:-/etc/duckdns.last}
+GW=$(ip route | awk '/^default/ {print $3; exit}')
+ext=$(natpmpc -g "$GW" 2>/dev/null | sed -n 's/^Public IP address : //p')
+if [ -z "$ext" ]; then
+  "$FAULTLOG_CMD" duckdns err 'action=public_ip result=natpmp_failed' || :
+  logger -t duckdns -p user.err 'could not learn public IP via NAT-PMP'
+  exit 1
+fi
+last=$(cat "$LAST" 2>/dev/null)
+failure_count=$(cat "$STATE" 2>/dev/null)
+case "$failure_count" in ''|*[!0-9]*) failure_count=0;; esac
+tmp=$(mktemp "${TMPDIR:-/tmp}/duckdns.XXXXXX") || exit 1
+trap 'rm -f "$tmp"' EXIT HUP INT TERM
+attempt=1
+while [ "$attempt" -le 3 ]; do
+  : > "$tmp"
+  started=$(date +%s)
+  # -f would discard the response body for HTTP errors. Keep at most 200 chars below.
+  http=$(curl -sS -m 20 -o "$tmp" -w '%{http_code}' "https://www.duckdns.org/update?domains=$DUCKDNS_DOMAIN&token=$DUCKDNS_TOKEN&ip=$ext" 2>/dev/null)
+  rc=$?
+  sec=$(( $(date +%s) - started ))
+  case "$http" in [0-9][0-9][0-9]) ;; *) http=000;; esac
+  body=$(tr '\r\n|' '   ' < "$tmp" | cut -c1-200 | sed -E 's/([Tt][Oo][Kk][Ee][Nn]|[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss][Pp][Hh][Rr][Aa][Ss][Ee])[[:space:]]*[:=][[:space:]]*[^[:space:]]+/\1=[REDACTED]/g' | tr ' ' '_')
+  if [ "$rc" -eq 0 ] && [ "$http" = 200 ] && [ "$(tr -d '\r\n' < "$tmp")" = OK ]; then
+    logger -t duckdns 'update ok'
+    if [ "$attempt" -gt 1 ]; then "$FAULTLOG_CMD" duckdns info "action=update result=recovered tries=$attempt" || :; fi
+    recovered=0
+    if [ "$failure_count" -gt 0 ]; then
+      recovered=1
+      "$NOTIFY_CMD" "$(printf 'DuckDNS recovered\nHTTP code : 200\nAttempts : %s' "$attempt")" 3 || :
+      "$FAULTLOG_CMD" duckdns info "action=notify result=recovered tries=$attempt" || :
+      rm -f "$STATE"
+    fi
+    if [ "$ext" != "$last" ]; then
+      printf '%s\n' "$ext" > "$LAST"
+      if [ -n "$last" ] && [ "$recovered" -eq 0 ]; then
+        "$NOTIFY_CMD" "$(printf 'Public IP changed\n%s -> %s; DuckDNS updated.' "$last" "$ext")" 3 || :
+      fi
+    fi
+    exit 0
+  fi
+  "$FAULTLOG_CMD" duckdns warn "action=update result=failed attempt=$attempt http=$http sec=$sec body=$body" || :
+  case "$http" in 5??|000) transient=1;; *) transient=0;; esac
+  [ "$rc" -ne 0 ] && transient=1
+  [ "$transient" -eq 1 ] && [ "$attempt" -lt 3 ] || break
+  if [ "$attempt" -eq 1 ]; then sleep 10; else sleep 30; fi
+  attempt=$((attempt + 1))
+done
+logger -t duckdns -p user.err "update failed: HTTP $http, attempts $attempt"
+failure_count=$((failure_count + 1))
+printf '%s\n' "$failure_count" > "$STATE"
+if [ "$failure_count" -eq 1 ]; then
+  "$NOTIFY_CMD" "$(printf 'DuckDNS update failed\nHTTP code : %s\nAttempts : %s\nResponse : %s' "$http" "$attempt" "$body")" 4 || :
+  "$FAULTLOG_CMD" duckdns err "action=notify result=initial_failure http=$http attempts=$attempt" || :
+fi
+exit 1

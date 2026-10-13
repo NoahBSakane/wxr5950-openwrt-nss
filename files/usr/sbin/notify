@@ -1,0 +1,62 @@
+#!/bin/sh
+# Send a notification to every configured destination. Exit 0 if at least one succeeded.
+# usage: notify "summary line[<newline>details]" [priority 1-5, default 3] [title]
+# config: /etc/notify.conf (mode 600; see notify.conf.example)
+#   NOTIFY_TITLE                          sender name shown by ntfy
+#   NTFY_SERVER / NTFY_TOPIC              public ntfy.sh (long random topic)
+#   NTFY2_SERVER / NTFY2_TOPIC / NTFY2_TOKEN   self-hosted ntfy (optional)
+#   MAIL_TO / MAIL_FROM                   addresses (msmtp and /etc/msmtprc required)
+#   MAIL_TO_NAME / MAIL_FROM_NAME         display names of the recipient and the sender
+#   SYSTEM_NAME / SITE_NAME               identity written into the mail body
+body="$1"
+prio="${2:-3}"
+[ -n "$body" ] || { echo "usage: notify <message> [priority 1-5] [title]" >&2; exit 1; }
+[ -r "${NOTIFY_CONF:-/etc/notify.conf}" ] && . "${NOTIFY_CONF:-/etc/notify.conf}"
+. "${AUTOMATION_LIB:-/usr/lib/automation-lib.sh}"
+title="${3:-${NOTIFY_TITLE:-Notice}}"
+ntfy_body=${NOTIFY_NTFY_BODY:-$body}
+
+json_escape() {
+  printf '%s' "$1" | awk 'BEGIN{ORS=""} {gsub(/\\/,"\\\\"); gsub(/"/,"\\\""); gsub(/\t/,"\\t"); if (NR>1) printf "\\n"; printf "%s",$0}'
+}
+# non-ASCII header text must be RFC 2047 encoded
+mime_word() { printf '=?UTF-8?B?%s?=' "$(printf '%s' "$1" | openssl base64 -A)"; }
+addr_with_name() { if [ -n "$2" ]; then printf '%s <%s>' "$(mime_word "$2")" "$1"; else printf '%s' "$1"; fi; }
+
+ok=0
+send_ntfy() {  # server topic token
+  [ -n "$1" ] && [ -n "$2" ] || return 1
+  payload="{\"topic\":\"$(json_escape "$2")\",\"title\":\"$(json_escape "$title")\",\"message\":\"$(json_escape "$ntfy_body")\",\"priority\":$prio}"
+  if [ -n "$3" ]; then
+    curl -fsS -m 20 -H "Authorization: Bearer $3" -H "Content-Type: application/json" -d "$payload" "$1" >/dev/null 2>&1
+  else
+    curl -fsS -m 20 -H "Content-Type: application/json" -d "$payload" "$1" >/dev/null 2>&1
+  fi
+}
+
+if send_ntfy "$NTFY_SERVER" "$NTFY_TOPIC" ""; then ok=1; logger -t notify "ntfy ok"; else [ -n "$NTFY_TOPIC" ] && logger -t notify -p user.err "ntfy FAILED"; fi
+if send_ntfy "$NTFY2_SERVER" "$NTFY2_TOPIC" "$NTFY2_TOKEN"; then ok=1; logger -t notify "ntfy2 ok"; else [ -n "$NTFY2_TOPIC" ] && logger -t notify -p user.err "ntfy2 FAILED"; fi
+
+if [ -n "$MAIL_TO" ] && command -v msmtp >/dev/null 2>&1 && [ -r "${NOTIFY_MSMTPRC:-/etc/msmtprc}" ]; then
+  host=$(uci -q get system.@system[0].hostname)
+  gen=$(ts_long)
+  case "$prio" in 1) pl=min;; 2) pl=low;; 4) pl=high;; 5) pl=urgent;; *) pl=default;; esac
+  summary=$(printf '%s' "$body" | head -n 1)
+  text=$(printf 'notice\n======\n\n  System : %s\n  Site : %s\n  Host : %s\n  Generated : %s\n  Priority : %s (%s)\n\n%s\n\n--\nThis message was generated automatically by /usr/sbin/notify\non %s.\n' \
+    "${SYSTEM_NAME:-$title}" "${SITE_NAME:--}" "$host" "$gen" "$prio" "$pl" "$body" "$host")
+  if printf 'From: %s\nTo: %s\nSubject: %s\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: base64\n\n%s\n' \
+       "$(addr_with_name "${MAIL_FROM:-$MAIL_TO}" "${MAIL_FROM_NAME:-$title}")" "$(addr_with_name "$MAIL_TO" "$MAIL_TO_NAME")" \
+       "$(mime_word "[Automation] $host: $summary")" "$(printf '%s\n' "$text" | openssl base64)" \
+     | msmtp -C "${NOTIFY_MSMTPRC:-/etc/msmtprc}" -t 2>/dev/null; then
+    ok=1; logger -t notify "mail ok"
+  else
+    logger -t notify -p user.err "mail FAILED"
+  fi
+fi
+if [ "$ok" != 1 ]; then
+  if [ "${OUTBOX_SKIP_ENQUEUE:-0}" != 1 ]; then
+    "${OUTBOX_ENQUEUE_CMD:-/usr/sbin/outbox-enqueue}" "$body" "$prio" "$title" >/dev/null 2>&1 || :
+  fi
+  exit 1
+fi
+exit 0

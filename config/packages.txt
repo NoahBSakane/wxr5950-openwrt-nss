@@ -16,6 +16,9 @@ iperf3
 htop
 tcpdump-mini
 ethtool
+usbutils
+blkid
+coreutils-stat
 
 # 広告ブロック・Web管理画面
 adblock-fast

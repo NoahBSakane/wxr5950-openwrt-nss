@@ -20,13 +20,23 @@ Buffalo WXR-5950AX12 専用のファームウェアを、[JuliusBairaktaris/open
 `scripts/prepare-build.sh` はビルダーの `scripts/prepare-build.sh` の `edma-nss` 手順に合わせ、次の順序で準備します。ビルダーのスクリプトをそのまま実行すると複数機種を一度解決・検証するため、機種の無効化とパッケージの上書きを最初の `make defconfig` より前に行います。
 
 1. `config/pins.json` に記録した６つの feed SHA を `src-git <name> <url>^<sha>` 形式で指定し、feedsを更新・インストールする。固定値が欠ける feed は警告して従来の先端追従に戻る。
-2. ビルダーの `patches/feeds/edma-nss/<feed>/*.patch` と `patches/tree/edma-nss/*.patch` を適用する。既に適用済みなら逆適用のdry-runで確認して省略し、適用不能なら失敗する。
-3. `devices/common/config` → `devices/ipq807x-1g/config` の順で設定を合成し、後の同名シンボルを優先する。ほかの機種と全機種選択を無効化し、`config/packages.txt` を最後に反映する。
+2. ビルダーの `patches/feeds/edma-nss/<feed>/*.patch` と `patches/tree/edma-nss/*.patch` に続き、自前の `patches/feeds/<feed>/*.patch` を適用する。既に適用済みなら逆適用のdry-runで確認して省略し、適用不能なら失敗する。広告ブロックのキャッシュ復旧修正は feeds の `adblock-fast.uc` に適用し、修正済みのファイルを ROM に入れる。
+3. `devices/common/config` → `devices/ipq807x-1g/config` の順で設定を合成し、後の同名シンボルを優先する。ほかの機種と全機種選択を無効化し、`config/packages.txt` と `config/extra-config.txt` を defconfig 前に反映する。後者は BusyBox のカスタム設定と `diff` を有効にし、機種・initramfs・全機種選択・qca-mcs を再有効化する指定は拒否する。
 4. `make defconfig` を実行し、ビルダーにならってカスタムfeedの配布リポジトリ設定（`CONFIG_FEED_nss`、`CONFIG_FEED_luci_extra`）を除外する。既定feedの置換に当たる場合は `nss` の配布設定を維持する。
-5. `common/files` → `common/files.edma-nss` → `ipq807x-1g/files` → `ipq807x-1g/files.edma-nss` の順に、存在するoverlayをコピーする。SSH設定の権限を `0600` にする。
+5. `common/files` → `common/files.edma-nss` → `ipq807x-1g/files` → `ipq807x-1g/files.edma-nss` の順に、存在するoverlayをコピーする。SSH設定の権限を `0600` にし、最後に `scripts/overlay-files.sh` で自前の `files/` を重ねる。ビルダーの既存の uci-defaults ファイルには触れず、自前の番号は `90-wxr5950-bake` とする。
 6. 指定された非 `n` 設定とパッケージの `y` / `m`、WXR-5950AX12 だけの機種選択、initramfs・全機種選択・tcpdumpの排他を検証する。
 
 ビルダーの複数機種選択方式（`CONFIG_TARGET_MULTI_PROFILE`、`CONFIG_TARGET_PER_DEVICE_ROOTFS`、`CONFIG_TARGET_DEVICE_...`）を維持し、機種は1台だけ選びます。メモリ設定は `CONFIG_NSS_MEM_PROFILE_HIGH=y` と `CONFIG_ATH11K_MEM_PROFILE_1G=y` です。APK形式を有効にします。ビルダーの共通設定に合わせてinitramfsを無効にするため、従来のinitramfsイメージは収集対象として残っていても生成されません。標準の成果物は既存OpenWrtから更新するsysupgradeイメージです。
+
+## 自作自動化の同梱と初回起動
+
+原本は別の非公開リポジトリの `router-scripts/` に置き、`config/bake-map.txt` が元ファイル名・イメージ内のパス・モードを指定します。原本を更新したら `scripts/sync-router-files.sh <router-scripts のパス>` で `files/` を再生成します。同期時はメールアドレス、ntfy のトピックらしい URL、秘密鍵ヘッダ、長いトークンらしい文字列を grep で検出し、該当すれば生成を中止します。生成した `files/etc/wxr5950-baked-paths` は同梱した全パスの一覧です。ビルド後は見つかったビルドルート内の各パスを `files/` と SHA-256 で照合し、不一致なら失敗します。ビルドルートが見つからない場合は警告し、成果物の `baked-files.sha256` で同梱元のハッシュを確認できます。
+
+固定した packages feed の `adblock-fast.uc` は SHA-256 `19727b189472f380b9791b1fc37c4acdec60eea06650f7d845fea8fafbd49315` です。旧ルーター側で記録したパッチ前の `8bd39504…4c28` とは一致しません。固定 feed の原文へのパッチ dry-run は成功していますが、ROM に入った修正後の内容と起動時の shadow 解消はビルド成果物で確認します。
+
+初回起動の `/etc/uci-defaults/90-wxr5950-bake` は、ROM に同じパスが存在する場合に限り、同梱パスを隠す overlay 側のファイルを処理します。パッチからパッケージへ入る `/lib/adblock-fast/adblock-fast.uc` も同じ条件で処理します。同一なら overlay 側を削除し、異なるなら `/root/overlay-shadow-backup-<日時>/` に退避してから取り除き、ROM 版を有効にします。その後、S18 の `adblock-cache-preload` を有効にします。件数と対象パスは syslog と、利用できれば faultlog に記録します。`/etc/sysupgrade.conf` から ROM に存在するこれらのパスの行だけを取り除き、他の保持設定は残します。cron に `natpmp-keepalive`（30分ごと）、`adblock-update`（毎日4:10）、`wan-watch`（5分ごと）、`duckdns-update`（30分ごと）、`config-backup-mail`（日曜4:30）の行がなければ追記します。既存行と順序は保持し、起動途中で cron を再起動しません。処理は再実行しても同じファイルを重複追加しません。
+
+通知・DDNS・メール・VPN 等の設定と秘密情報は同梱しません。具体的には `/etc/notify.conf`、`/etc/duckdns.conf`、`/etc/msmtprc`、`/etc/tailscale`、`/etc/shadow`、`/root/.ssh`、`/etc/ssh/ssh_host_*`、`/etc/backup-cert.pem`、`notify.conf.example` を除外します。`sysupgrade -n` による初期化後もスクリプトと cron の既定は ROM から復元されますが、秘密・個別設定・バックアップ済み状態は別途、安全に復元する必要があります。退避された旧 overlay ファイルは自動的に戻しません。
 
 既定のビルダー設定にはNSSドライバー・ECM・Wi-Fi offload・SQM・NSS管理ツール、NSS firmware 12.5、OpenSSH、OpenSSL、GCC 15、binutils 2.46、LTO・moldなども含まれます。PPEだけを使う別ワークフローの `common-ppe` / `ppe-ipq807x` 設定やパッチ、mesh用の `config.mesh` は使いません。
 
@@ -41,6 +51,7 @@ Buffalo WXR-5950AX12 専用のファームウェアを、[JuliusBairaktaris/open
 - `fork-commit.txt`、`builder-commit.txt`：実際に取得した両リポジトリの完全なSHA
 - `pins-used.json`：指定した ref、feed pins、取得した両リポジトリの SHA
 - `packages.txt`：今回のパッケージ指定
+- `baked-files.sha256`：同梱した31パスの SHA-256 一覧。ビルドルートが見つからない場合も出力します。
 - `packages/`：`openwrt/bin/` 以下の全生成APKと、存在する `packages.adb`・`index.json`・`APKINDEX.tar.gz`。元のディレクトリ階層を維持するため、例えば `packages/packages/<architecture>/<feed>/` と `packages/targets/qualcommax/ipq807x/packages/` に入ります。
 
 `=m` のパッケージも `packages/` に入ります。依存パッケージと `=y` のAPKもまとめて収集するため、従来よりアーティファクトが大きくなります。manifestはイメージの内容を表し、`=m` の一覧ではありません。APKが1件もなければ収集を失敗させます。ローカルビルドのAPKとインデックスの署名・インストール可否は実機での確認が必要です。
@@ -61,7 +72,7 @@ mdns-repeater=m
 
 `tcpdump-mini` と `tcpdump` は同じ実行ファイルを提供するため、どちらかを指定すると他方を無効化し、両方の同時指定は `=m` を含めてエラーにします。既定のビルダー共通設定には、どちらも明示指定されていません。
 
-現在の指定は、組み込みが `luci`、`kmod-wireguard`、`wireguard-tools`、`luci-proto-wireguard`、`natpmpc`、`tailscale`、`kmod-tun`、`iperf3`、`htop`、`tcpdump-mini`、`ethtool`、`adblock-fast`、`luci-app-adblock-fast`、APKだけ作るものが `miniupnpd-nftables`、`mdns-repeater` です。`luci`・`iperf3`・`htop`・`kmod-tun` は既定のビルダー共通設定と重複し、`ethtool` はフォークの `nss-tools` の依存にも含まれます。NSS seedは使用しません。
+組み込み指定には `usbutils`（`lsusb`）、`blkid`、`coreutils-stat`（`stat`）も含めます。BusyBox `diff` は `config/extra-config.txt` で有効にします。NSS seedは使用しません。
 
 ## NSS利用時の注意
 

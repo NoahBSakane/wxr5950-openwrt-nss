@@ -42,10 +42,14 @@ done
 for patch_file in "$BUILDER_REPO/patches/tree/$variant"/*.patch; do
   apply_patch_file . "$patch_file"
 done
+for patch_file in "$repo_dir/patches/feeds"/*/*.patch; do
+  apply_patch_file "feeds/$(basename -- "$(dirname -- "$patch_file")")" "$patch_file"
+done
 shopt -u nullglob
 
 python3 "$repo_dir/scripts/configure.py" prepare \
   --builder "$BUILDER_REPO" --packages "$repo_dir/config/packages.txt" \
+  --extra-config "$repo_dir/config/extra-config.txt" \
   --config .config --required "$REQUIRED_CONFIG"
 make defconfig
 
@@ -68,3 +72,4 @@ done
 if [[ -f files/etc/ssh/sshd_config ]]; then
   chmod 0600 files/etc/ssh/sshd_config
 fi
+bash "$repo_dir/scripts/overlay-files.sh" "$repo_dir/files" "$OPENWRT_DIR/files"

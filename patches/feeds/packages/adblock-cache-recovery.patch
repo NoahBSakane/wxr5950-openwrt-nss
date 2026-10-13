@@ -1,0 +1,81 @@
+--- a/net/adblock-fast/files/lib/adblock-fast/adblock-fast.uc
++++ b/net/adblock-fast/files/lib/adblock-fast/adblock-fast.uc
+@@ -855,10 +855,10 @@
+ 		return (stat(dns_output.gzip)?.size > 0) && gzip_test(dns_output.gzip);
+ 	case 'create_gzip':
+ 		if (!(stat(dns_output.file)?.size > 0)) return false;
+-		unlink(dns_output.gzip);
++		// Keep the last good cache until its replacement is complete.
+ 		// Write temp file in same directory as destination to avoid cross-filesystem rename
+ 		let gz_tmp = dns_output.gzip + '.tmp';
+-		if (gzip_compress(dns_output.file, gz_tmp)) {
++		if (gzip_compress(dns_output.file, gz_tmp) && gzip_test(gz_tmp)) {
+ 			if (rename(gz_tmp, dns_output.gzip)) {
+ 				return true;
+ 			}
+@@ -1462,7 +1462,9 @@
+ 		for (let mode in dns_modes) {
+ 			let dc = dns_modes[mode];
+ 			unlink(dc.cache);
+-			unlink(cfg.compressed_cache_dir + '/' + dc.gzip);
++			// Preserve the active persistent cache during refresh/recovery.
++			if (mode != cfg.dns || !cfg.compressed_cache)
++				unlink(cfg.compressed_cache_dir + '/' + dc.gzip);
+ 			if (dc.file != pkg.dnsmasq_file) unlink(dc.file);
+ 			if (dc.config) unlink(dc.config);
+ 		}
+@@ -1830,7 +1832,8 @@
+ 	status_data.message = get_text('statusDownloading') + '...';
+ 	status_data.status = 'statusDownloading';
+ 
+-	for (let f in [tmp.allowed, tmp.a, tmp.b, tmp.sed, dns_output.file, dns_output.cache, dns_output.gzip]) unlink(f);
++	// Persistent cache is the fallback when an update cannot finish.
++	for (let f in [tmp.allowed, tmp.a, tmp.b, tmp.sed, dns_output.file, dns_output.cache]) unlink(f);
+ 	if (get_mem_total() < pkg.memory_threshold) {
+ 		output.print('Low free memory, restarting resolver ');
+ 		if (resolver('quiet_restart')) output.okn(); else output.failn();
+@@ -2587,6 +2590,24 @@
+ 		resolver('on_start');
+ 	}
+ 
++	// An incomplete update must not replace a complete saved block-list.
++	let using_saved_cache = false;
++	if (action == 'download' && length(status_data.errors) > 0)
++		status_data.status = 'statusFail';
++	if ((!adb_file('test') || status_data.status == 'statusFail') &&
++	    cfg.compressed_cache && adb_file('test_gzip')) {
++		if (adb_file('unpack_gzip') && adb_file('restore')) {
++			cfg.dnsmasq_sanity_check = false;
++			cfg.heartbeat_domain = null;
++			status_data.status = 'statusStarting';
++			if (resolver('on_start')) {
++				using_saved_cache = true;
++				output.warning('Update failed; restored the last successful block-list.');
++			} else {
++				status_data.status = 'statusFail';
++			}
++		}
++	}
+ 	let final_status = status_data.status;
+ 	if (adb_file('test') && final_status != 'statusFail') {
+ 		status_data.message = '';
+@@ -2601,7 +2622,9 @@
+ 	}
+ 
+ 	// Compressed cache: create or remove
+-	if (cfg.compressed_cache && !adb_file('test_gzip') && adb_file('test')) {
++	if (cfg.compressed_cache && adb_file('test') && !using_saved_cache &&
++	    status_data.status == 'statusSuccess' &&
++	    (action == 'download' || !adb_file('test_gzip'))) {
+ 		let start_time = time();
+ 		let step_title = 'Creating ' + cfg.dns + ' compressed cache';
+ 		output.info(step_title + ' ');
+@@ -2616,7 +2639,7 @@
+ 		let end_time = time();
+ 		let elapsed = end_time - start_time;
+ 		logger_debug('[PERF-DEBUG] ' + step_title + ' took ' + elapsed + 's');
+-	} else {
++	} else if (!cfg.compressed_cache) {
+ 		adb_file('remove_gzip');
+ 	}
+ 

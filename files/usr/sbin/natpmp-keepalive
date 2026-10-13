@@ -1,0 +1,23 @@
+#!/bin/sh
+# Ask the upstream gateway (NAT-PMP) to keep every port in /etc/natpmp-ports mapped.
+# Runs every 30 minutes and on WAN ifup. File format: "<proto> <port>" per line (e.g. "udp 52959").
+# Notifies only when the state of a mapping changes (failure / recovery).
+STATE=/tmp/natpmp-state
+GW=$(ip route | awk '/^default/ {print $3; exit}')
+[ -n "$GW" ] || { logger -t natpmp -p user.err "no default gateway"; exit 1; }
+: > "$STATE.new"
+while read -r proto port; do
+  [ -n "$port" ] || continue
+  out=$(natpmpc -g "$GW" -a "$port" "$port" "$proto" 3600 2>&1)
+  got=$(echo "$out" | sed -n 's/.*Mapped public port \([0-9]*\) protocol.*/\1/p')
+  if [ "$got" = "$port" ]; then status=ok; logger -t natpmp "ok: $proto $port mapped via $GW"
+  else status=fail; logger -t natpmp -p user.err "FAILED or port changed: $proto $port (got '$got') via $GW"; fi
+  echo "$proto $port $status" >> "$STATE.new"
+  prev=$(awk -v a="$proto" -v b="$port" '$1==a && $2==b {print $3}' "$STATE" 2>/dev/null)
+  if [ "$status" = fail ] && [ "$prev" != fail ]; then
+    /usr/sbin/notify "$(printf 'NAT-PMP mapping failed (%s/%s)\nCould not map %s/%s on the upstream gateway (got: %s). Inbound connections may fail.' "$proto" "$port" "$proto" "$port" "${got:-none}")" 4 &
+  elif [ "$status" = ok ] && [ "$prev" = fail ]; then
+    /usr/sbin/notify "NAT-PMP mapping restored ($proto/$port)" 3 &
+  fi
+done < /etc/natpmp-ports
+mv "$STATE.new" "$STATE"

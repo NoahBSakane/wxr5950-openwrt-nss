@@ -1,0 +1,8 @@
+#!/bin/sh
+# Once after boot, when the WAN comes up, send "System started" (/etc/hotplug.d/iface/98-notify-boot)
+[ "$ACTION" = ifup ] && [ "$INTERFACE" = wan ] || exit 0
+up=$(cut -d. -f1 /proc/uptime)
+[ "$up" -lt 300 ] || exit 0
+[ -e /tmp/boot-notified ] && exit 0
+touch /tmp/boot-notified
+( sleep 20; /usr/sbin/notify "$(printf 'System started\nThe system booted (reboot or power loss).')" 3 ) &

@@ -1,0 +1,126 @@
+#!/bin/sh
+# Add or remove ONE host in adblock-fast's own custom block list ("blocked_domain"), with checks and automatic rollback.
+#   usage: ufret-dns-block status | apply [--yes] | rollback [--yes]
+# Without --yes nothing is changed (dry run). The router config survives sysupgrade (/etc/config/adblock-fast is a
+# conffile) and the entry is re-applied by every list update, so the existing preload/recovery path keeps it.
+# Scope is exactly srv.tunefindforfans.com. It is NOT html-load.com / content-loader.com / video-loads.com /
+# error-report.com: blocking those makes the site show an "allow ads" wall (results/ufret-ad-block-20261013.md).
+# NOTE: written without router access. The first live run is still pending; BusyBox-only constructs were used on purpose.
+BLOCK_DOMAIN=${UFRET_BLOCK_DOMAIN:-srv.tunefindforfans.com}
+CONTROL_HOSTS=${UFRET_CONTROL_HOSTS:-"ufret.jp www.ufret.jp www.google.com www.youtube.com example.com cdn.jsdelivr.net"}
+UNCHANGED_HOSTS=${UFRET_UNCHANGED_HOSTS:-"html-load.com content-loader.com video-loads.com error-report.com"}
+LIST=${ADBLOCK_LIST:-/var/run/adblock-fast/dnsmasq.servers}
+UCODE=${ADBLOCK_UCODE:-/lib/adblock-fast/adblock-fast.uc}
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+STATE_SAVE_CMD=${STATE_SAVE_CMD:-/usr/sbin/state-save}
+REFRESH_CMD=${UFRET_REFRESH_CMD:-/usr/sbin/adblock-update}
+DNS_SERVER=${UFRET_DNS_SERVER:-127.0.0.1}
+
+mode=${1:-status}
+yes=0
+[ "${2:-}" = --yes ] && yes=1
+
+say() { printf '%s\n' "$*"; }
+rec() { "$FAULTLOG_CMD" ufret "$1" "$2" >/dev/null 2>&1 || :; }   # severity, key=value message
+
+# blocked | resolves | error  (BusyBox nslookup prints "Name:" on success and NXDOMAIN on a blocked name)
+dns_state() {
+  _out=$(nslookup "$1" "$DNS_SERVER" 2>&1)
+  case "$_out" in *NXDOMAIN*) echo blocked; return;; esac
+  if printf '%s\n' "$_out" | grep -q '^Name:'; then echo resolves; else echo error; fi
+}
+in_list() {
+  case " $(uci -q get adblock-fast.config.blocked_domain 2>/dev/null) " in *" $BLOCK_DOMAIN "*) return 0;; esac
+  return 1
+}
+entries() {
+  _n=$(wc -l < "$LIST" 2>/dev/null | tr -d ' \t\r\n')
+  case "$_n" in ''|*[!0-9]*) _n=0;; esac
+  echo "$_n"
+}
+snapshot() { for _h in $CONTROL_HOSTS $UNCHANGED_HOSTS $BLOCK_DOMAIN; do echo "$_h $(dns_state "$_h")"; done; }
+check_support() {
+  [ "$(uci -q get adblock-fast.config.enabled 2>/dev/null)" = 1 ] || { say "ABORT: adblock-fast is not enabled"; return 1; }
+  # The installed code must know the option; otherwise the entry would be silently ignored.
+  grep -q blocked_domain "$UCODE" 2>/dev/null || { say "ABORT: $UCODE does not mention blocked_domain (option unsupported?)"; return 1; }
+  return 0
+}
+refresh() { "$REFRESH_CMD" >/dev/null 2>&1; }
+
+verify_applied() {
+  [ "$(dns_state "$BLOCK_DOMAIN")" = blocked ] || { say "target is not blocked"; return 1; }
+  for _h in $CONTROL_HOSTS; do
+    [ "$(dns_state "$_h")" = resolves ] || { say "control host does not resolve: $_h"; return 1; }
+  done
+  for _h in $UNCHANGED_HOSTS; do
+    _now=$(dns_state "$_h")
+    _was=$(printf '%s\n' "$before" | awk -v h="$_h" '$1 == h {print $2}')
+    [ "$_now" = "$_was" ] || { say "host changed state: $_h $_was -> $_now"; return 1; }
+  done
+  _c=$(entries)
+  { [ "$_c" -gt 0 ] && [ "$((_c * 100))" -ge "$((count_before * 80))" ]; } || { say "entry count dropped: $count_before -> $_c"; return 1; }
+  return 0
+}
+
+do_rollback() {
+  uci -q del_list "adblock-fast.config.blocked_domain=$BLOCK_DOMAIN" 2>/dev/null
+  uci commit adblock-fast
+  refresh || say "WARN: refresh after rollback reported a failure"
+  if [ "$(dns_state "$BLOCK_DOMAIN")" = blocked ] && ! in_list; then
+    say "WARN: $BLOCK_DOMAIN is still blocked by another source (not by this tool)"
+  fi
+  return 0
+}
+
+case "$mode" in
+status)
+  say "target        : $BLOCK_DOMAIN"
+  if in_list; then say "custom list   : present"; else say "custom list   : absent"; fi
+  say "dns (target)  : $(dns_state "$BLOCK_DOMAIN")"
+  for _h in $CONTROL_HOSTS $UNCHANGED_HOSTS; do say "dns            : $_h $(dns_state "$_h")"; done
+  say "list entries  : $(entries)"
+  if check_support >/dev/null 2>&1; then say "support       : ok"; else say "support       : $(check_support 2>&1 | head -n 1)"; fi
+  exit 0
+  ;;
+apply)
+  check_support || exit 3
+  before=$(snapshot)
+  count_before=$(entries)
+  for _h in $CONTROL_HOSTS; do
+    [ "$(printf '%s\n' "$before" | awk -v h="$_h" '$1 == h {print $2}')" = resolves ] || { say "ABORT: baseline is unhealthy ($_h does not resolve); nothing changed"; exit 3; }
+  done
+  if in_list && [ "$(dns_state "$BLOCK_DOMAIN")" = blocked ]; then say "already applied; nothing to do"; exit 0; fi
+  if [ "$(dns_state "$BLOCK_DOMAIN")" = blocked ]; then say "NOTE: $BLOCK_DOMAIN is already blocked by another source; adding it to the custom list as well"; fi
+  say "plan: add $BLOCK_DOMAIN to adblock-fast.config.blocked_domain, refresh the lists, verify, roll back on any anomaly"
+  say "baseline: $count_before list entries; hosts: $(printf '%s' "$before" | tr '\n' ';')"
+  [ "$yes" = 1 ] || { say "dry run: nothing changed (re-run with --yes)"; exit 0; }
+  "$STATE_SAVE_CMD" ufret-dns-block-before >/dev/null 2>&1 || say "WARN: state-save unavailable; relying on the in-script rollback"
+  rec info "action=apply result=started domain=$BLOCK_DOMAIN entries_before=$count_before"
+  if ! in_list; then uci add_list "adblock-fast.config.blocked_domain=$BLOCK_DOMAIN"; fi
+  uci commit adblock-fast
+  if ! refresh; then
+    say "FAILED: the list refresh reported an error; rolling back"; do_rollback
+    rec err "action=apply result=rolled_back reason=refresh_failed domain=$BLOCK_DOMAIN"; exit 1
+  fi
+  msg=$(verify_applied) || {
+    say "FAILED: $msg; rolling back"; do_rollback
+    rec err "action=apply result=rolled_back reason=verify_failed domain=$BLOCK_DOMAIN"; exit 1
+  }
+  rec info "action=apply result=ok domain=$BLOCK_DOMAIN entries=$(entries)"
+  say "APPLIED: $BLOCK_DOMAIN is blocked; control hosts resolve; $(entries) list entries"
+  exit 0
+  ;;
+rollback)
+  say "plan: remove $BLOCK_DOMAIN from adblock-fast.config.blocked_domain and refresh the lists"
+  [ "$yes" = 1 ] || { say "dry run: nothing changed (re-run with --yes)"; exit 0; }
+  "$STATE_SAVE_CMD" ufret-dns-block-pre-rollback >/dev/null 2>&1 || :
+  do_rollback
+  rec info "action=rollback result=done domain=$BLOCK_DOMAIN"
+  say "ROLLED BACK: dns (target) is now $(dns_state "$BLOCK_DOMAIN"); list entries $(entries)"
+  exit 0
+  ;;
+*)
+  say "usage: ufret-dns-block status | apply [--yes] | rollback [--yes]"
+  exit 2
+  ;;
+esac

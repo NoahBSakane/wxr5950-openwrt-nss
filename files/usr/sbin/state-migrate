@@ -1,0 +1,7 @@
+#!/bin/sh
+# Hotplug entry for the verified NAND -> USB state transfer.
+. "${STATE_LIB:-/usr/lib/state-lib.sh}" || exit 1
+state_migrate
+rc=$?
+"${FAULTLOG_CMD:-/usr/sbin/faultlog}" state info "action=migrate result=$([ "$rc" -eq 0 ] && printf success || printf failed)" || :
+exit "$rc"

@@ -1,0 +1,32 @@
+#!/bin/sh /etc/rc.common
+# Restore the validated persistent list before dnsmasq (START=19).
+START=18
+
+boot() {
+	local cachedir cache target temp
+	[ "$(uci -q get adblock-fast.config.enabled)" = 1 ] || return 0
+	[ "$(uci -q get adblock-fast.config.compressed_cache)" = 1 ] || return 0
+	[ "$(uci -q get adblock-fast.config.dns)" = dnsmasq.servers ] || return 0
+	cachedir=$(uci -q get adblock-fast.config.compressed_cache_dir)
+	[ -n "$cachedir" ] || return 0
+	cache="$cachedir/adblock-fast.dnsmasq.servers.gz"
+	target=/var/run/adblock-fast/dnsmasq.servers
+	[ -s "$target" ] && return 0
+	[ -s "$cache" ] || return 0
+	mkdir -p /var/run/adblock-fast || return 0
+	temp=$(mktemp "$target.preload.XXXXXX") || return 0
+	if gzip -dc "$cache" > "$temp" && [ -s "$temp" ]; then
+		chmod 644 "$temp"
+		if mv -f "$temp" "$target"; then
+			logger -t adblock-cache-preload 'validated persistent list restored before dnsmasq'
+			return 0
+		fi
+	fi
+	rm -f "$temp"
+	logger -t adblock-cache-preload 'persistent cache restore failed; existing list preserved'
+	return 0
+}
+
+start() {
+	boot
+}

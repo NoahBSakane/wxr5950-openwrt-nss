@@ -1,0 +1,83 @@
+#!/bin/sh
+# Layered WAN probe. cron: */5 * * * * /usr/sbin/wan-watch
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+NOTIFY_CMD=${NOTIFY_CMD:-/usr/sbin/notify}
+OUTBOX_FLUSH_CMD=${OUTBOX_FLUSH_CMD:-/usr/sbin/outbox-flush}
+EVIDENCE_CAPTURE_CMD=${EVIDENCE_CAPTURE_CMD:-/usr/sbin/evidence-capture}
+STATE=${WAN_WATCH_STATE:-/tmp/wan-watch.state}
+RESOLV=${WAN_WATCH_RESOLV:-/tmp/resolv.conf.d/resolv.conf.auto}
+UPTIME=${WAN_WATCH_UPTIME:-/proc/uptime}
+now=$(date +%s)
+bootup=$(cut -d. -f1 "$UPTIME" 2>/dev/null)
+case "$bootup" in ''|*[!0-9]*) bootup=0;; esac
+if [ "$bootup" -lt 300 ]; then
+  "$FAULTLOG_CMD" wan info "action=probe result=deferred uptime=$bootup" || :
+  exit 0
+fi
+GW=$(ip route | awk '/^default/ {print $3; exit}')
+gw=0; external=0; upstream=0; direct=0; https=0
+[ -n "$GW" ] && ping -c 1 -W 3 "$GW" >/dev/null 2>&1 && gw=1
+for host in 1.1.1.1 8.8.8.8; do
+  if ping -c 1 -W 3 "$host" >/dev/null 2>&1; then external=1; break; fi
+done
+if [ "$external" -eq 1 ]; then
+  dns_server=$(awk '$1 == "nameserver" {print $2; exit}' "$RESOLV" 2>/dev/null)
+  [ -n "$dns_server" ] && nslookup example.com "$dns_server" >/dev/null 2>&1 && upstream=1
+  nslookup example.com 1.1.1.1 >/dev/null 2>&1 && direct=1
+  curl -fsS -m 8 -o /dev/null https://1.1.1.1/cdn-cgi/trace >/dev/null 2>&1 && https=1
+fi
+if [ "$external" -eq 0 ]; then
+  if [ "$gw" -eq 1 ]; then status=gw_only; rank=3; else status=external_down; rank=4; fi
+elif [ "$upstream" -eq 0 ]; then
+  if [ "$direct" -eq 1 ]; then status=upstream_dns_down; rank=2; else status=dns_down; rank=3; fi
+elif [ "$https" -eq 0 ]; then status=https_down; rank=2
+elif [ "$gw" -eq 0 ]; then status=gw_unreachable; rank=1
+else status=ok; rank=0
+fi
+prev=unknown; fails=0; since=0; worst=ok; worst_rank=0; notified=0; lastlog=0; captured=0
+[ -r "$STATE" ] && read -r prev fails since worst worst_rank notified lastlog captured < "$STATE"
+case "$fails:$since:$worst_rank:$notified:$lastlog:$captured" in *[!0-9:]*) fails=0; since=0; worst_rank=0; notified=0; lastlog=0; captured=0;; esac
+if [ "$status" = ok ] || [ "$status" = gw_unreachable ]; then
+  if [ "$fails" -ge 3 ]; then
+    mins=$(( (now - since) / 60 ))
+    [ "$mins" -ge 0 ] || mins=0
+    "$NOTIFY_CMD" "$(printf 'WAN is back\nDuration : %s min\nWorst stage : %s' "$mins" "$worst")" 4 || :
+    "$FAULTLOG_CMD" wan info "action=notify result=recovered duration_min=$mins worst=$worst" || :
+  fi
+  if [ "$prev" != ok ]; then
+    "$OUTBOX_FLUSH_CMD" >/dev/null 2>&1 || :
+    "$FAULTLOG_CMD" wan info "action=outbox_flush result=attempted status=$status" || :
+  fi
+  if [ "$status" = gw_unreachable ]; then
+    if [ "$prev" != "$status" ] || [ "$((now - lastlog))" -ge 900 ]; then
+      "$FAULTLOG_CMD" wan warn "action=probe status=gw_unreachable gw=0 external=1 upstream_dns=1 direct_dns=1 https=1" || :
+      lastlog=$now
+    fi
+  else
+    [ "$prev" = ok ] || "$FAULTLOG_CMD" wan info "action=transition from=$prev to=ok gw=$gw external=$external upstream_dns=$upstream direct_dns=$direct https=$https" || :
+  fi
+  printf '%s 0 0 ok 0 0 %s 0\n' "$status" "$lastlog" > "$STATE"
+  exit 0
+fi
+if [ "$fails" -eq 0 ]; then since=$now; worst=$status; worst_rank=$rank; fi
+[ "$rank" -gt "$worst_rank" ] && { worst=$status; worst_rank=$rank; }
+fails=$((fails + 1))
+if [ "$prev" != "$status" ] || [ "$((now - lastlog))" -ge 900 ]; then
+  "$FAULTLOG_CMD" wan warn "action=probe status=$status gw=$gw external=$external upstream_dns=$upstream direct_dns=$direct https=$https failures=$fails" || :
+  lastlog=$now
+fi
+if [ "$prev" = ok ] || [ "$prev" = unknown ]; then
+  "$FAULTLOG_CMD" snap "wan-$status" || :
+fi
+if [ "$status" = upstream_dns_down ] && [ "$captured" -eq 0 ]; then
+  "$EVIDENCE_CAPTURE_CMD" wan-upstream-dns 60 >/dev/null 2>&1 &
+  "$FAULTLOG_CMD" wan info 'action=capture result=started reason=upstream_dns_down' || :
+  captured=1
+fi
+if [ "$fails" -ge 3 ] && [ "$notified" -eq 0 ]; then
+  mins=$(( (now - since) / 60 ))
+  "$NOTIFY_CMD" "$(printf 'WAN connectivity failed\nStage : %s\nDuration : %s min\nWorst stage : %s' "$status" "$mins" "$worst")" 4 || :
+  "$FAULTLOG_CMD" wan err "action=notify result=initial_failure status=$status failures=$fails" || :
+  notified=1
+fi
+printf '%s %s %s %s %s %s %s %s\n' "$status" "$fails" "$since" "$worst" "$worst_rank" "$notified" "$lastlog" "$captured" > "$STATE"

@@ -1,0 +1,40 @@
+#!/bin/sh
+# Capture sanitized repair state. Never includes credential files or raw private keys.
+. "${AUTOMATION_LIB:-/usr/lib/automation-lib.sh}" || exit 1
+. "${STATE_LIB:-/usr/lib/state-lib.sh}" || exit 1
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+tag=$(state_clean_tag "${1:-manual}"); [ -n "$tag" ] || tag=manual
+if faultlog_usb_ready; then state_migrate || { "$FAULTLOG_CMD" state err 'action=migrate result=failed' || :; exit 1; }; fi
+base=$(state_dir)
+mkdir -p "$base" || exit 1
+archive=$base/$(ts_file)-$tag
+mkdir "$archive" 2>/dev/null || exit 1
+# Always collect the smallest useful rollback set. NAND excludes package inventory.
+for file in "$(state_source /etc/config)"/*; do
+  [ -f "$file" ] || continue
+  state_copy "$file" "etc/config/${file##*/}" "$archive" || exit 1
+done
+for name in notify natpmp-keepalive 98-notify-boot wan-watch adblock-update duckdns-update 99-duckdns faultlog faultlog-migrate outbox-enqueue outbox-flush outbox-migrate state-save state-restore state-migrate evidence-capture; do
+  state_copy "$STATE_SCRIPT_DIR/$name" "usr/sbin/$name" "$archive" || exit 1
+done
+for name in automation-lib.sh faultlog-lib.sh outbox-lib.sh state-lib.sh; do
+  state_copy "$(state_source "/usr/lib/$name")" "usr/lib/$name" "$archive" || exit 1
+done
+for file in "$(state_source /etc/hotplug.d/iface)"/9*; do
+  [ -f "$file" ] || continue
+  state_copy "$file" "etc/hotplug.d/iface/${file##*/}" "$archive" || exit 1
+done
+state_copy "$(state_source /etc/hotplug.d/block/99-faultlog-usb)" etc/hotplug.d/block/99-faultlog-usb "$archive" || exit 1
+for rel in etc/crontabs/root etc/sysupgrade.conf lib/adblock-fast/adblock-fast.uc etc/init.d/adblock-cache-preload; do
+  state_copy "$(state_source "/$rel")" "$rel" "$archive" || exit 1
+done
+if faultlog_usb_ready; then
+  state_copy "$(state_source /etc/apk/world)" etc/apk/world "$archive" || exit 1
+  { apk info 2>/dev/null || :; } | state_redact > "$archive/apk-info.txt"
+fi
+uname -r > "$archive/kernel-release.txt"
+(cd "$archive" && find . -type f ! -name MANIFEST.sha256 -exec sha256sum {} +) > "$archive/MANIFEST.sha256" || exit 1
+state_prune "$base" || exit 1
+[ -d "$archive" ] || { "$FAULTLOG_CMD" state err 'action=save result=oversize' || :; exit 1; }
+"$FAULTLOG_CMD" state info "action=save result=success tag=$tag" || :
+printf '%s\n' "$archive"

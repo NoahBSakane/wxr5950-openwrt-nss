@@ -1,0 +1,75 @@
+#!/bin/sh
+# Encrypt the system configuration with a public key and mail it to ourselves
+# (cron: 30 4 * * 0 = every Sunday 04:30).
+# S/MIME (AES-256). Only the public certificate (/etc/backup-cert.pem) lives on this system;
+# the private key stays on the Mac, so old backups stay unreadable even if this system is compromised.
+# decrypt (Mac): openssl smime -decrypt -inform DER -in FILE.cms -inkey backup-private-key.pem -out backup.tar.gz
+[ -r /etc/notify.conf ] && . /etc/notify.conf
+. /usr/lib/automation-lib.sh
+[ -n "$MAIL_TO" ] && command -v msmtp >/dev/null 2>&1 && [ -r /etc/backup-cert.pem ] || { logger -t config-backup -p user.err "not configured"; exit 1; }
+tmp=/tmp/cfgbk.$$
+date_f=$(ts_file); date_s=$(ts_short)
+host=$(uci -q get system.@system[0].hostname)
+fail() { logger -t config-backup -p user.err "FAILED: $1"; rm -f "$tmp".*; /usr/sbin/notify "$(printf 'Config backup failed\nStage: %s.' "$1")" 4 & exit 1; }
+
+sysupgrade -b "$tmp.tar.gz" >/dev/null 2>&1 && [ -s "$tmp.tar.gz" ] || fail "backup"
+openssl smime -encrypt -aes256 -binary -outform DER -in "$tmp.tar.gz" -out "$tmp.cms" /etc/backup-cert.pem 2>/dev/null && [ -s "$tmp.cms" ] || fail "encrypt"
+
+mime_word() { printf '=?UTF-8?B?%s?=' "$(printf '%s' "$1" | openssl base64 -A)"; }
+addr_with_name() { if [ -n "$2" ]; then printf '%s <%s>' "$(mime_word "$2")" "$1"; else printf '%s' "$1"; fi; }
+boundary="bk$$$(date +%s)"
+size=$(wc -c < "$tmp.cms")
+sha=$(sha256sum "$tmp.cms" | cut -d' ' -f1)
+src_files=$(tar tzf "$tmp.tar.gz" | wc -l)
+src_bytes=$(wc -c < "$tmp.tar.gz")
+fp=$(openssl x509 -in /etc/backup-cert.pem -noout -fingerprint -sha256 2>/dev/null | sed 's/.*=//')
+fp1=$(printf '%s' "$fp" | cut -c1-47); fp2=$(printf '%s' "$fp" | cut -c49-)
+gen=$(ts_long)
+up=$(cut -d. -f1 /proc/uptime); upd=$((up / 86400)); uph=$(( (up % 86400) / 3600 )); upm=$(( (up % 3600) / 60 ))
+rel=$(sed -n "s/^DISTRIB_REVISION='\(.*\)'/\1/p" /etc/openwrt_release)
+text=$(cat <<TXT
+config-backup report
+====================
+
+  System : ${SYSTEM_NAME:-$host}
+  Site : ${SITE_NAME:--}
+  Host : $host
+  Generated : $gen
+  Release : OpenWrt SNAPSHOT $rel (kernel $(uname -r))
+  Uptime : $upd days, $uph:$(printf '%02d' $upm)
+
+Attachment
+----------
+  File : config-backup-$date_f.tar.gz.cms
+  Size : $size bytes
+  SHA-256 : $sha
+  Format : S/MIME enveloped-data (DER), AES-256-CBC
+  Recipient : config-backup (RSA 3072)
+  Fingerprint : $fp
+  Source : sysupgrade -b ($src_files files, $src_bytes bytes)
+
+Restore
+-------
+  \$ openssl smime -decrypt -inform DER -in config-backup-$date_f.tar.gz.cms \\
+        -inkey backup-private-key.pem -out backup.tar.gz
+  \$ tar tzf backup.tar.gz
+
+--
+This message was generated automatically by /usr/sbin/config-backup-mail
+on $host.
+TXT
+)
+{
+  printf 'From: %s\nTo: %s\n' "$(addr_with_name "${MAIL_FROM:-$MAIL_TO}" "${MAIL_FROM_NAME:-$NOTIFY_TITLE}")" "$(addr_with_name "$MAIL_TO" "$MAIL_TO_NAME")"
+  printf 'Subject: %s\n' "$(mime_word "[Automation] $host: config-backup $date_s")"
+  printf 'MIME-Version: 1.0\nContent-Type: multipart/mixed; boundary="%s"\n\n' "$boundary"
+  printf -- '--%s\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: base64\n\n' "$boundary"
+  printf '%s\n' "$text" | openssl base64
+  printf -- '--%s\nContent-Type: application/octet-stream; name="config-backup-%s.tar.gz.cms"\nContent-Transfer-Encoding: base64\nContent-Disposition: attachment; filename="config-backup-%s.tar.gz.cms"\n\n' "$boundary" "$date_f" "$date_f"
+  openssl base64 < "$tmp.cms"
+  printf -- '--%s--\n' "$boundary"
+} > "$tmp.eml"
+msmtp -C /etc/msmtprc -t < "$tmp.eml" 2>/dev/null || fail "send"
+logger -t config-backup "ok: sent encrypted backup ($size bytes)"
+rm -f "$tmp".*
+/usr/sbin/notify "$(printf 'Config backup sent\nEncrypted backup %s was mailed.' "$date_s")" 1 &

@@ -1,0 +1,2 @@
+#!/bin/sh
+[ "$ACTION" = ifup ] && [ "$INTERFACE" = wan ] && ( sleep 5; /usr/sbin/natpmp-keepalive ) &

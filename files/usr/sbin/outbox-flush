@@ -1,0 +1,56 @@
+#!/bin/sh
+# One summary to all configured destinations; retain source files on total failure.
+. "${AUTOMATION_LIB:-/usr/lib/automation-lib.sh}" || exit 1
+. "${OUTBOX_LIB:-/usr/lib/outbox-lib.sh}" || exit 1
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+NOTIFY_CMD=${NOTIFY_CMD:-/usr/sbin/notify}
+outbox_lock || exit 1
+printf '%s\n' "$$" > "$OUTBOX_LOCK/pid"
+trap 'outbox_unlock' EXIT HUP INT TERM
+if faultlog_usb_ready; then
+  outbox_migrate || { "$FAULTLOG_CMD" outbox err 'action=migrate result=failed' || :; exit 1; }
+fi
+dir=$(outbox_dir)
+[ -d "$dir" ] || exit 0
+set -- "$dir"/*
+[ -f "$1" ] || exit 0
+# Never read partial temporary files. Queue cardinality and aggregation cost O(N+B).
+list=$(mktemp "${TMPDIR:-/tmp}/outbox-list.XXXXXX") || exit 1
+trap 'rm -f "$list"; outbox_unlock' EXIT HUP INT TERM
+: > "$list"
+count=0
+for file do
+  [ -f "$file" ] || continue
+  case "${file##*/}" in .*) continue;; esac
+  printf '%s\n' "$file" >> "$list"
+done
+[ -s "$list" ] || exit 0
+keys=$(mktemp "${TMPDIR:-/tmp}/outbox-keys.XXXXXX") || exit 1
+trap 'rm -f "$list" "$keys"; outbox_unlock' EXIT HUP INT TERM
+while IFS= read -r file; do
+  name=${file##*/}
+  printf '%s\n' "${name%%-*}"
+done < "$list" | awk '!seen[$0]++' > "$keys"
+count=$(wc -l < "$keys" | tr -d ' ')
+body=$(printf '%s queued notifications\nGenerated : %s\n\n' "$count" "$(ts_long)"
+  while IFS= read -r key; do
+    total=0; first=
+    for file in "$dir/$key"*; do
+      [ -f "$file" ] || continue
+      [ -n "$first" ] || first=$file
+      n=$(sed -n 's/^Count : //p' "$file" | sed -n '1p')
+      n=${n:-1}
+      [ "$n" -ge 0 ] 2>/dev/null || n=1
+      total=$((total + n))
+    done
+    printf '%s\n' '---'
+    printf 'Count : %s\n' "$total"
+    sed '1d' "$first"
+  done < "$keys")
+if OUTBOX_SKIP_ENQUEUE=1 NOTIFY_NTFY_BODY="$(printf '%s queued notifications\nGenerated : %s' "$count" "$(ts_long)")" "$NOTIFY_CMD" "$body" 4; then
+  while IFS= read -r file; do rm -f "$file"; done < "$list"
+  "$FAULTLOG_CMD" outbox info "action=flush result=sent count=$count" || :
+  exit 0
+fi
+"$FAULTLOG_CMD" outbox warn "action=flush result=deferred count=$count" || :
+exit 1

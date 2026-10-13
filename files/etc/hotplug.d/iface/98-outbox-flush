@@ -1,0 +1,15 @@
+#!/bin/sh
+# /etc/hotplug.d/iface/98-outbox-flush. ifup can precede working DNS.
+[ "$ACTION" = ifup ] && [ "$INTERFACE" = wan ] || exit 0
+(
+  n=0
+  while [ "$n" -lt 6 ]; do
+    if nslookup example.com >/dev/null 2>&1; then
+      "${OUTBOX_FLUSH_CMD:-/usr/sbin/outbox-flush}" >/dev/null 2>&1 || :
+      exit 0
+    fi
+    n=$((n + 1))
+    sleep 10
+  done
+) &
+exit 0

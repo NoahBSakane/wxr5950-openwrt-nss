@@ -1,0 +1,11 @@
+#!/bin/sh
+# WireGuard の端末(ピア)を1台削除する。使い方(ルーター上): wg-del-peer <名前>
+# 稼働中の wg0 からも外すので、その端末は即座につながらなくなる(他の端末は切れない)。
+name="$1"
+[ -n "$name" ] || { echo "usage: wg-del-peer <name>" >&2; exit 1; }
+sec="wgpeer_$name"
+pub=$(uci -q get "network.$sec.public_key") || { echo "peer '$name' not found" >&2; exit 1; }
+wg set wg0 peer "$pub" remove
+uci delete "network.$sec"
+uci commit network
+echo "removed peer '$name'" >&2

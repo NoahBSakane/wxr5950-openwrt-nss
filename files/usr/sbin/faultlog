@@ -1,0 +1,64 @@
+#!/bin/sh
+# Best effort event logger. Never fail a caller. USB path is not live-tested.
+# shellcheck source=router-scripts/automation-lib.sh
+# shellcheck disable=SC1091
+. "${AUTOMATION_LIB:-/usr/lib/automation-lib.sh}" 2>/dev/null || exit 0
+# shellcheck source=router-scripts/faultlog-lib.sh
+. "${FAULTLOG_LIB:-/usr/lib/faultlog-lib.sh}" 2>/dev/null || exit 0
+faultlog_event() {
+  [ $# -ge 3 ] || return 0
+  component=$(faultlog_clean_field "$1")
+  severity=$2
+  case "$severity" in info|warn|err|crit) ;; *) return 0;; esac
+  shift 2
+  message=$(faultlog_clean_field "$*")
+  if ! printf '%s\n' "$message" | awk '{for (i=1; i<=NF; i++) if ($i !~ /^[A-Za-z_][A-Za-z0-9_]*=/) exit 1}'; then
+    message="message=$(printf '%s' "$message" | tr ' ' '_')"
+  fi
+  dir=$(faultlog_dir)
+  # Successful routine runs stay in tmpfs while USB is absent. Incident recovery
+  # remains with the NAND evidence; normal operation must not wear NAND.
+  if ! faultlog_is_usb && [ "$severity" = info ]; then
+    case "$message" in
+      *result=recovered*|*from=gw_only*|*from=external_down*|*from=upstream_dns_down*|*from=dns_down*|*from=https_down*) ;;
+      *) dir=${FAULTLOG_RAM_DIR:-/tmp/faultlog};;
+    esac
+  fi
+  mkdir -p "$dir" || return 0
+  if faultlog_is_usb; then limit=8388608; generations=16; else limit=65536; generations=4; fi
+  faultlog_rotate "$dir" "$limit" "$generations"
+  up=$(cut -d. -f1 "${FAULTLOG_UPTIME:-/proc/uptime}" 2>/dev/null)
+  case "$up" in ''|*[!0-9]*) up=0;; esac
+  record="$(ts_long) | up=$up | $component | $severity | $message"
+  current=$(faultlog_size "$dir/events.log")
+  record_size=$(printf '%s\n' "$record" | wc -c | tr -d ' ')
+  [ "$((current + record_size))" -le "$limit" ] || faultlog_rotate "$dir" 0 "$generations"
+  printf '%s\n' "$record" >> "$dir/events.log"
+  faultlog_prune "$dir"
+}
+faultlog_snap() {
+  tag=$(printf '%s' "${1:-incident}" | tr -cd 'A-Za-z0-9_-' | cut -c1-40)
+  [ -n "$tag" ] || tag=incident
+  dir=$(faultlog_dir)
+  mkdir -p "$dir/snapshots" || return 0
+  file="$dir/snapshots/$(ts_file)-$tag-$$.txt"
+  tmp="$file.tmp"
+  {
+    printf 'Generated : %s\nTag : %s\n' "$(ts_long)" "$tag"
+    printf '\n[logread]\n'; logread 2>&1 | tail -n 300
+    printf '\n[ip route]\n'; ip route 2>&1
+    printf '\n[wan status]\n'; ubus call network.interface.wan status 2>&1 | sed -n '/"up"/p;/"available"/p;/"ipv4-address"/p;/"address"/p;/"dns-server"/p;/"route"/p'
+    printf '\n[uptime]\n'; uptime 2>&1
+    printf '\n[free]\n'; free 2>&1
+    printf '\n[df]\n'; df 2>&1
+    printf '\n[conntrack invalid]\n'; conntrack -S 2>&1 | sed -n '/invalid=/p'
+    printf '\n[netfilter]\n'
+    for p in /proc/sys/net/netfilter/nf_conntrack_count /proc/sys/net/netfilter/nf_conntrack_max /proc/sys/net/netfilter/nf_conntrack_tcp_timeout_established; do
+      [ -r "$p" ] && { printf '%s : ' "$p"; cat "$p"; }
+    done
+  } | faultlog_redact | head -c 131072 > "$tmp" || { rm -f "$tmp"; return 0; }
+  mv "$tmp" "$file" || rm -f "$tmp"
+  faultlog_prune "$dir"
+}
+case "$1" in snap) shift; faultlog_snap "$@";; *) faultlog_event "$@";; esac
+exit 0

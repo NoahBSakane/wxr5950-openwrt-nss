@@ -1,0 +1,76 @@
+#!/bin/sh
+# WireGuard の端末(ピア)を1台追加し、その端末に渡すクライアント設定を標準出力に出す。
+# 使い方(ルーター上): wg-add-peer <名前> [DNSサーバー(既定: lan のルーター自身のアドレス)]
+#   例: wg-add-peer ipad > ipad.conf
+# - 名前は英数字と _ だけ(uci のセクション名の制約。- は使えない)。VPN(wg0)のネットワークの .2 から順に空いているアドレスを割り当てる(最大 .254。/24 前提)。
+# - アドレス範囲は、ルーターの uci(network.wg0 / lan / iot)から読む。スクリプト自体には、特定のネットワークの値を持たない。
+# - 稼働中の wg0 に直接足すので、既存の端末の接続は切れない。
+# - クライアントの秘密鍵はルーターに保存しない(標準出力に出るだけ)。
+# 削除は wg-del-peer <名前>。
+set -e
+name="$1"
+# 例: ipaddr=192.0.2.1/24 -> 192.0.2.0/24(ipcalc.sh は OpenWrt に標準で入っている)
+net_of() { ( eval "$(ipcalc.sh "$1")" && echo "$NETWORK/$PREFIX" ); }
+lanaddr=$(uci -q get network.lan.ipaddr) || lanaddr=
+wgaddr=$(uci -q get network.wg0.addresses | awk '{print $1; exit}') || wgaddr=
+[ -n "$lanaddr" ] && [ -n "$wgaddr" ] || { echo "network.lan.ipaddr / network.wg0.addresses (CIDR) is not set" >&2; exit 1; }
+wgpre=${wgaddr%.*}
+wgnet=$(net_of "$wgaddr")
+allowed="$(net_of "$lanaddr")"
+iotaddr=$(uci -q get network.iot.ipaddr) || iotaddr=
+[ -z "$iotaddr" ] || allowed="$allowed, $(net_of "$iotaddr")"
+allowed="$allowed, $wgnet"
+dns="${2:-${lanaddr%/*}}"
+[ -n "$name" ] || { echo "usage: wg-add-peer <name> [dns]" >&2; exit 1; }
+case "$name" in *[!a-zA-Z0-9_]*) echo "name must be [a-zA-Z0-9_] (no hyphen: uci section name)" >&2; exit 1;; esac
+sec="wgpeer_$name"
+if uci -q get "network.$sec" >/dev/null; then echo "peer '$name' already exists" >&2; exit 1; fi
+
+wgre=$(printf '%s' "$wgpre" | sed 's/\./\\./g')
+used=$(uci show network | sed -n "s/.*allowed_ips=.*$wgre\.\([0-9][0-9]*\)\/32.*/\1/p")
+n=2
+while echo "$used" | grep -qx "$n"; do n=$((n + 1)); done
+[ "$n" -le 254 ] || { echo "no free address in $wgnet" >&2; exit 1; }
+
+umask 077
+priv=$(wg genkey)
+pub=$(echo "$priv" | wg pubkey)
+psk=$(wg genpsk)
+
+uci set "network.$sec=wireguard_wg0"
+uci set "network.$sec.description=$name"
+uci set "network.$sec.public_key=$pub"
+uci set "network.$sec.preshared_key=$psk"
+uci add_list "network.$sec.allowed_ips=$wgpre.$n/32"
+uci set "network.$sec.route_allowed_ips=1"
+uci commit network
+
+# 稼働中のインターフェースに直接追加する(再起動しない)
+pskfile="/tmp/wg-psk.$$"
+echo "$psk" > "$pskfile"
+wg set wg0 peer "$pub" preshared-key "$pskfile" allowed-ips "$wgpre.$n/32"
+rm -f "$pskfile"
+
+srvpub=$(wg show wg0 public-key)
+port=$(uci get network.wg0.listen_port)
+gw=$(ip route | awk '/^default/ {print $3; exit}')
+ext=$(natpmpc -g "$gw" 2>/dev/null | sed -n 's/^Public IP address : //p')
+[ -n "$ext" ] || ext="<公開IPを入れる>"
+# DuckDNS を設定済みなら、IPではなくホスト名を接続先にする(公開IPが変わっても、プロファイルを作り直さずに済む)
+[ -r /etc/duckdns.conf ] && . /etc/duckdns.conf
+[ -n "$DUCKDNS_DOMAIN" ] && ext="$DUCKDNS_DOMAIN.duckdns.org"
+
+cat <<EOF
+[Interface]
+PrivateKey = $priv
+Address = $wgpre.$n/32
+DNS = $dns
+
+[Peer]
+PublicKey = $srvpub
+PresharedKey = $psk
+Endpoint = $ext:$port
+AllowedIPs = $allowed
+PersistentKeepalive = 25
+EOF
+echo "added peer '$name' as $wgpre.$n" >&2

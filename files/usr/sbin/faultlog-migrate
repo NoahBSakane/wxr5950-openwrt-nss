@@ -1,0 +1,8 @@
+#!/bin/sh
+# Called after MAHALOG ext4 is mounted. USB path is not live-tested.
+# shellcheck source=router-scripts/faultlog-lib.sh
+. "${FAULTLOG_LIB:-/usr/lib/faultlog-lib.sh}" || exit 1
+faultlog_migrate
+rc=$?
+"${FAULTLOG_CMD:-/usr/sbin/faultlog}" usb info "action=migrate result=$([ "$rc" -eq 0 ] && printf success || printf failed) scope=faultlog_pstore" || :
+exit "$rc"

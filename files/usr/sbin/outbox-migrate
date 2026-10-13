@@ -1,0 +1,10 @@
+#!/bin/sh
+# Hotplug entry for the verified NAND -> USB queue transfer.
+. "${OUTBOX_LIB:-/usr/lib/outbox-lib.sh}" || exit 1
+outbox_lock || exit 1
+printf '%s\n' "$$" > "$OUTBOX_LOCK/pid"
+trap 'outbox_unlock' EXIT HUP INT TERM
+outbox_migrate
+rc=$?
+"${FAULTLOG_CMD:-/usr/sbin/faultlog}" outbox info "action=migrate result=$([ "$rc" -eq 0 ] && printf success || printf failed)" || :
+exit "$rc"

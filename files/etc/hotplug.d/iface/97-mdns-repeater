@@ -1,0 +1,8 @@
+#!/bin/sh
+# Restart mdns-repeater whenever the lan or iot interface comes up (/etc/hotplug.d/iface/97-mdns-repeater).
+# Its sockets are bound to br-lan and br-iot; when a bridge is re-created (Wi-Fi or network reload) the old
+# sockets go stale and forwarding silently stops. The init script's own reload trigger does not fire,
+# because it is given device names (br-lan) while netifd reports logical names (lan).
+[ "$ACTION" = ifup ] || exit 0
+case "$INTERFACE" in lan|iot) ;; *) exit 0 ;; esac
+( sleep 8; /etc/init.d/mdns-repeater restart ) &

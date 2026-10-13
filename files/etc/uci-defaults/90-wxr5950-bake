@@ -1,0 +1,118 @@
+#!/bin/sh
+# First boot only. All paths may be redirected into a disposable test root.
+ROOT=${ROOT:-}
+ROM=${ROM:-$ROOT/rom}
+OVERLAY=${OVERLAY:-$ROOT/overlay/upper}
+manifest=$ROOT/etc/wxr5950-baked-paths
+backup_base=$ROOT/root
+conf=$ROOT/etc/sysupgrade.conf
+cron=$ROOT/etc/crontabs/root
+preload=$ROOT/etc/init.d/adblock-cache-preload
+faultlog=$ROOT/usr/sbin/faultlog
+
+log_bake() {
+    logger -t wxr5950-bake "$*" 2>/dev/null || :
+    if [ -x "$faultlog" ]; then
+        "$faultlog" bake info "$*" >/dev/null 2>&1 || :
+    fi
+}
+
+[ -f "$manifest" ] || exit 0
+active=$(mktemp "${TMPDIR:-/tmp}/wxr5950-bake.XXXXXX") || exit 0
+while IFS= read -r path || [ -n "$path" ]; do
+    case "$path" in
+        /*) case "$path" in *'/../'*|*'/./'*|*'/..'|*'/.'|*'//'*) continue;; esac ;;
+        *) continue ;;
+    esac
+    [ -f "$ROM$path" ] || continue
+    printf '%s\n' "$path" >> "$active"
+done < "$manifest"
+# The feed patch installs this module through its package, not through files/.
+# Its old sysupgrade copy must also stop shadowing the patched ROM module.
+patched_module=/lib/adblock-fast/adblock-fast.uc
+if [ -f "$ROM$patched_module" ]; then
+    printf '%s\n' "$patched_module" >> "$active"
+fi
+if [ ! -s "$active" ]; then
+    rm -f "$active"
+    exit 0
+fi
+
+removed=0
+backed_up=0
+failed=0
+backup=
+while IFS= read -r path; do
+    upper=$OVERLAY$path
+    [ -f "$upper" ] || continue
+    if cmp -s "$upper" "$ROM$path"; then
+        if rm -f "$upper"; then
+            removed=$((removed + 1))
+            log_bake "action=remove_identical path=$path"
+        else
+            failed=$((failed + 1))
+            log_bake "action=remove_identical path=$path result=failed"
+        fi
+    else
+        if [ -z "$backup" ]; then
+            backup=$backup_base/overlay-shadow-backup-$(date +%Y%m%d-%H%M%S)-$$
+        fi
+        target=$backup$path
+        if mkdir -p "${target%/*}" && mv "$upper" "$target"; then
+            backed_up=$((backed_up + 1))
+            log_bake "action=backup_shadow path=$path"
+        else
+            failed=$((failed + 1))
+            log_bake "action=backup_shadow path=$path result=failed"
+        fi
+    fi
+done < "$active"
+log_bake "action=shadow_summary removed=$removed backed_up=$backed_up failed=$failed"
+
+# Run the ROM init script after removing any older overlay copy of it.
+if [ -x "$preload" ]; then
+    "$preload" enable >/dev/null 2>&1 || log_bake 'action=enable_preload result=failed'
+fi
+
+if [ -f "$conf" ]; then
+    temp=$(mktemp "$conf.XXXXXX")
+    if [ -n "$temp" ]; then
+        if cp -p "$conf" "$temp" && awk 'FILENAME == ARGV[1] { baked[$0]=1; next } !($0 in baked)' "$active" "$conf" > "$temp"; then
+            if cmp -s "$temp" "$conf"; then
+                rm -f "$temp"
+            elif mv "$temp" "$conf"; then
+                log_bake 'action=sysupgrade_cleanup result=ok'
+            else
+                rm -f "$temp"
+                log_bake 'action=sysupgrade_cleanup result=failed'
+            fi
+        else
+            rm -f "$temp"
+            log_bake 'action=sysupgrade_cleanup result=failed'
+        fi
+    fi
+fi
+
+if [ -f "$cron" ] || mkdir -p "${cron%/*}"; then
+    [ -f "$cron" ] || : > "$cron"
+    for line in \
+        '*/30 * * * * /usr/sbin/natpmp-keepalive' \
+        '10 4 * * * /usr/sbin/adblock-update' \
+        '*/5 * * * * /usr/sbin/wan-watch' \
+        '*/30 * * * * /usr/sbin/duckdns-update' \
+        '30 4 * * 0 /usr/sbin/config-backup-mail'; do
+        if ! grep -Fqx "$line" "$cron"; then
+            # Add a separator only when a new line is actually needed.
+            if [ -s "$cron" ] && [ "$(tail -c 1 "$cron" | wc -l)" -eq 0 ]; then
+                printf '\n' >> "$cron" || log_bake 'action=cron_newline result=failed'
+            fi
+            if printf '%s\n' "$line" >> "$cron"; then
+                log_bake "action=cron_add command=${line##* }"
+            else
+                log_bake 'action=cron_add result=failed'
+            fi
+        fi
+    done
+fi
+rm -f "$active"
+exit 0

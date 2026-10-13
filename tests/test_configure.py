@@ -29,6 +29,8 @@ class ConfigurationTests(unittest.TestCase):
         self.packages.write_text("# comment\nluci\nluci=y # duplicate\nmdns-repeater=m\ntcpdump-mini\n")
         self.config = self.root / ".config"
         self.required = self.root / "required.txt"
+        self.extra = self.root / "extra-config.txt"
+        self.extra.write_text("# comment\nCONFIG_BUSYBOX_CUSTOM=y\nCONFIG_BUSYBOX_CONFIG_DIFF=y\n")
 
     def prepare(self):
         configure.prepare(self.root, self.packages, self.config, self.required)
@@ -133,6 +135,36 @@ class ConfigurationTests(unittest.TestCase):
         values = configure.read_config(self.config)
         self.assertEqual(values["CONFIG_PACKAGE_tcpdump"], "m")
         self.assertEqual(values["CONFIG_PACKAGE_tcpdump-mini"], "n")
+
+    def test_extra_config_is_required_and_verified(self):
+        configure.prepare(self.root, self.packages, self.config, self.required, self.extra)
+        self.assertEqual(configure.read_config(self.config)["CONFIG_BUSYBOX_CONFIG_DIFF"], "y")
+        values = configure.read_config(self.config)
+        values["CONFIG_BUSYBOX_CONFIG_DIFF"] = "n"
+        configure.write_config(self.config, values)
+        with self.assertRaisesRegex(ValueError, "CONFIG_BUSYBOX_CONFIG_DIFF"):
+            configure.verify(self.config, self.required)
+
+    def test_extra_config_rejects_unsafe_overrides(self):
+        for line in (
+            "CONFIG_TARGET_ROOTFS_INITRAMFS=y",
+            "CONFIG_TARGET_ALL_PROFILES=y",
+            "CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_other=y",
+            "CONFIG_PACKAGE_kmod-qca-mcs=y",
+            "CONFIG_QCA_MCS_SUPPORT=y",
+            "CONFIG_NSS_QCA_MCS=y",
+        ):
+            with self.subTest(line=line):
+                self.extra.write_text(line + "\n")
+                with self.assertRaises(ValueError):
+                    configure.prepare(self.root, self.packages, self.config, self.required, self.extra)
+
+    def test_extra_config_parse_and_conflict(self):
+        for line in ("CONFIG_FOO=m", "CONFIG_FOO=1", "bad", "CONFIG_FOO=y\n# CONFIG_FOO is not set"):
+            with self.subTest(line=line):
+                self.extra.write_text(line + "\n")
+                with self.assertRaises(ValueError):
+                    configure.read_extra_config(self.extra)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,47 @@
+#!/bin/sh
+# Refresh blocklists and reject fallback/stale/empty/shrunk results. cron: 10 4 * * *
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+NOTIFY_CMD=${NOTIFY_CMD:-/usr/sbin/notify}
+LIST=${ADBLOCK_LIST:-/var/run/adblock-fast/dnsmasq.servers}
+LAST=${ADBLOCK_LAST:-/etc/adblock-fast.last-count}
+INIT=${ADBLOCK_INIT:-/etc/init.d/adblock-fast}
+tmp=$(mktemp "${TMPDIR:-/tmp}/adblock-update.XXXXXX") || exit 1
+marker=$(mktemp "${TMPDIR:-/tmp}/adblock-update.mark.XXXXXX") || exit 1
+trap 'rm -f "$tmp" "$marker"' EXIT HUP INT TERM
+# No stat(1) on the router: a list older than the marker was not rewritten by this run.
+"$INIT" dl > "$tmp" 2>&1
+rc=$?
+status_json=$(ubus call luci.adblock-fast getInitStatus '{"name":"adblock-fast"}' 2>/dev/null)
+ubus_rc=$?
+# LuCI RPC returns {"adblock-fast":{"status":...,"errors":...}}.
+status=$(printf '%s' "$status_json" | jsonfilter -e '@["adblock-fast"].status' 2>/dev/null)
+errors=$(printf '%s' "$status_json" | jsonfilter -e '@["adblock-fast"].errors' 2>/dev/null | tr -d ' \t\r\n')  # BusyBox tr has no [:space:] class
+count=$(wc -l < "$LIST" 2>/dev/null | tr -d ' ')
+previous=$(cat "$LAST" 2>/dev/null)
+case "$count" in ''|*[!0-9]*) count=0;; esac
+case "$previous" in ''|*[!0-9]*) previous=0;; esac
+reason=
+if [ "$rc" -ne 0 ]; then reason=command_failed
+elif grep -iq 'Update failed; restored' "$tmp" || grep -Eq 'ERRO|FAIL|Failed' "$tmp"; then reason=fallback_message
+elif [ "$ubus_rc" -ne 0 ] || [ "$status" != statusSuccess ]; then reason=bad_status
+elif [ -n "$errors" ] && [ "$errors" != '[]' ] && [ "$errors" != '{}' ]; then reason=status_errors
+elif [ ! -f "$LIST" ] || [ "$marker" -nt "$LIST" ]; then reason=stale_list
+elif [ "$count" -eq 0 ]; then reason=empty_list
+elif [ "$previous" -gt 0 ] && [ "$((count * 100))" -le "$((previous * 80))" ]; then reason=count_drop
+fi
+if grep -iq 'Sanity check.*leading dots' "$tmp"; then
+  "$FAULTLOG_CMD" adblock warn "action=sanity_check issue=leading_dots" || :
+fi
+if [ -n "$reason" ]; then
+  "$FAULTLOG_CMD" adblock err "action=update result=failed reason=$reason entries=$count previous=$previous status=$status" || :
+  logger -t adblock-update -p user.err "update failed: $reason"
+  "$NOTIFY_CMD" "$(printf 'Blocklist update failed\nReason : %s\nEntries : %s\nPrevious entries : %s\nSee : logread | grep adblock' "$reason" "$count" "$previous")" 3 || :
+  exit 1
+fi
+delta=$((count - previous))
+"$FAULTLOG_CMD" adblock info "action=update result=success entries=$count delta=$delta" || :
+logger -t adblock-update "updated: $count entries"
+if [ "$count" -ne "$previous" ]; then
+  # At most one small NAND write per day.
+  if [ ! -f "$LAST" ] || [ -z "$(find "$LAST" -mmin -1440 2>/dev/null)" ]; then printf '%s\n' "$count" > "$LAST"; fi
+fi
