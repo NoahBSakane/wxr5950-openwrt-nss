@@ -17,6 +17,8 @@ state-restore /usr/sbin/state-restore 0755
 state-migrate /usr/sbin/state-migrate 0755
 evidence-capture /usr/sbin/evidence-capture 0755
 ufret-dns-block /usr/sbin/ufret-dns-block 0755
+dns-guard /usr/sbin/dns-guard 0755
+adblock-why /usr/sbin/adblock-why 0755
 automation-lib.sh /usr/lib/automation-lib.sh 0644
 faultlog-lib.sh /usr/lib/faultlog-lib.sh 0644
 outbox-lib.sh /usr/lib/outbox-lib.sh 0644

@@ -1,0 +1,120 @@
+#!/bin/sh
+# Read-only explanation of DNS and adblock-fast data.
+RESOLV=${ADBLOCK_WHY_RESOLV:-/tmp/resolv.conf.d/resolv.conf.auto}
+LIST=${ADBLOCK_LIST:-/var/run/adblock-fast/dnsmasq.servers}
+CACHE=${ADBLOCK_CACHE:-/etc/adblock-fast/adblock-fast.dnsmasq.servers.gz}
+NSLOOKUP_CMD=${NSLOOKUP_CMD:-nslookup}
+UCI_CMD=${UCI_CMD:-uci}
+CURL_CMD=${CURL_CMD:-curl}
+ZCAT_CMD=${ZCAT_CMD:-zcat}
+usage() { printf 'usage: adblock-why <domain> [--sources]\n' >&2; exit 2; }
+[ "$#" -ge 1 ] && [ "$#" -le 2 ] || usage
+domain=$1
+if [ "${#domain}" -gt 253 ] || ! printf '%s\n' "$domain" | LC_ALL=C grep -Eq '^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$'; then usage; fi
+[ "$#" -eq 1 ] || [ "$2" = --sources ] || usage
+sources=0
+[ "$#" -eq 2 ] && sources=1
+
+parents=$domain
+part=$domain
+while [ "${part#*.}" != "$part" ]; do
+  part=${part#*.}
+  parents="$parents $part"
+done
+
+# Keep the resolver's own Address line out of the answer.
+lookup() {
+  output=$("$NSLOOKUP_CMD" "$domain" "$1" 2>&1)
+  case "$output" in *NXDOMAIN*|*'Non-existent domain'*) printf 'NXDOMAIN\n'; return;; esac
+  address=$(printf '%s\n' "$output" | awk '/^Name:[[:space:]]/ {seen=1; next} seen && /^Address([[:space:]]|[[:digit:]]|:)/ {print $NF; exit}')
+  if [ -n "$address" ]; then printf '%s\n' "$address"; else printf 'no-answer\n'; fi
+}
+is_resolved() { [ "$1" != NXDOMAIN ] && [ "$1" != no-answer ]; }
+printf 'Domain : %s\n' "$domain"
+local_answer=$(lookup 127.0.0.1)
+server=$(awk '$1 == "nameserver" {print $2; exit}' "$RESOLV" 2>/dev/null)
+upstream_answer=no-answer
+[ -n "$server" ] && upstream_answer=$(lookup "$server")
+public_answer=$(lookup 1.1.1.1)
+printf 'Local : %s\nUpstream : %s\nPublic : %s\n' "$local_answer" "$upstream_answer" "$public_answer"
+verdict=unknown
+if is_resolved "$local_answer"; then verdict=resolves
+elif [ "$local_answer" = NXDOMAIN ]; then
+  if is_resolved "$upstream_answer" || is_resolved "$public_answer"; then verdict='blocked-by-router'
+  elif [ "$upstream_answer" = NXDOMAIN ] && [ "$public_answer" = NXDOMAIN ]; then verdict=nxdomain-everywhere
+  fi
+fi
+printf 'Verdict : %s\n' "$verdict"
+
+# Scan the list once, retaining only exact rules for this name and its parents.
+# shellcheck disable=SC2016 # This is an awk program; dollar signs belong to awk.
+entry_scan='
+  BEGIN {n=split(names,p," "); effective="none"}
+  /^server=\// {
+    for(i=1;i<=n;i++) {
+      if($0=="server=/" p[i] "/#") {lines[i]=lines[i] "AllowEntry : " $0 "\n"; allow[i]=1; break}
+      if($0=="server=/" p[i] "/") {lines[i]=lines[i] "BlockEntry : " $0 "\n"; block[i]=1; break}
+    }
+  }
+  END {
+    for(i=1;i<=n;i++) {
+      printf "%s", lines[i]
+      if(effective=="none") {if(allow[i]) effective="allow"; else if(block[i]) effective="block"}
+    }
+    print "EffectiveEntry : " effective
+  }'
+if [ -r "$LIST" ]; then
+  awk -v names="$parents" "$entry_scan" "$LIST"
+elif [ -r "$CACHE" ]; then
+  "$ZCAT_CMD" "$CACHE" 2>/dev/null | awk -v names="$parents" "$entry_scan"
+else
+  printf 'EffectiveEntry : none\n'
+fi
+
+allowed=$("$UCI_CMD" -q get adblock-fast.config.allowed_domain 2>/dev/null)
+blocked=$("$UCI_CMD" -q get adblock-fast.config.blocked_domain 2>/dev/null)
+config_allowed=no; config_blocked=no
+for parent in $parents; do
+  case " $allowed " in *" $parent "*) config_allowed=yes;; esac
+  case " $blocked " in *" $parent "*) config_blocked=yes;; esac
+done
+printf 'ConfigAllowed : %s\nConfigBlocked : %s\n' "$config_allowed" "$config_blocked"
+
+if [ "$sources" -eq 0 ]; then
+  printf 'ListedIn : (not checked; use --sources)\n'
+else
+  "$UCI_CMD" show adblock-fast 2>/dev/null | awk '
+    /^adblock-fast\.[^.]+=/{next}
+    /^adblock-fast\.[^.]+\./ {
+      key=$0; sub(/^adblock-fast\./,"",key); section=key; sub(/\..*/,"",section)
+      field=key; sub(/^[^.]+\./,"",field); sub(/=.*/,"",field)
+      value=$0; sub(/^[^=]*=/,"",value); gsub(/^\047|\047$/,"",value)
+      if (!(section in seen)) {order[++n]=section; seen[section]=1}
+      if (field=="name") name[section]=value
+      if (field=="url") url[section]=value
+      if (field=="action") action[section]=value
+      if (field=="enabled") enabled[section]=value
+    }
+    END {for(i=1;i<=n;i++){s=order[i]; if(action[s]=="block" && enabled[s]=="1" && url[s]!="") print name[s] "|" url[s]}}
+  ' | while IFS='|' read -r name url; do
+    [ -n "$name" ] || name='(unnamed)'
+    # The status marker is emitted by this shell after curl exits, through the same stream.
+    found=$( { "$CURL_CMD" -fsS -m 120 "$url"; printf '\n__ADBLOCK_FETCH_STATUS__ %s\n' "$?"; } | awk -v names="$parents" '
+      /^__ADBLOCK_FETCH_STATUS__ / {status=$2; next}
+      {if ($1=="0.0.0.0" || $1=="127.0.0.1") candidate=$2; else candidate=$1
+       sub(/^\|\|/,"",candidate); sub(/\^.*$/, "", candidate)
+       if (index(" " names " ", " " candidate " ") > 0) match_found=1}
+      END {if(status!="0") print "failed"; else if(match_found) print "yes"; else print "no"}
+    ')
+    if [ "$found" = failed ]; then printf 'ListedIn : (fetch failed: %s)\n' "$name"
+    elif [ "$found" = yes ]; then printf 'ListedIn : %s\n' "$name"
+    fi
+  done
+fi
+if [ "$verdict" = blocked-by-router ] && [ "$config_blocked" = yes ]; then
+  printf 'Note : this name is in your own blocked_domain list on purpose; remove it from blocked_domain instead of allowing it.\n'
+elif [ "$verdict" = blocked-by-router ]; then
+  printf 'Hint : to allow, run: uci add_list adblock-fast.config.allowed_domain=%s; uci commit adblock-fast; /etc/init.d/adblock-fast dl\n' "$domain"
+  printf 'Note : dl fetches lists again; reload can reuse the cache.\n'
+fi
+exit 0

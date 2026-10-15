@@ -12,7 +12,9 @@
 /usr/lib/outbox-lib.sh
 /usr/lib/state-lib.sh
 /usr/sbin/adblock-update
+/usr/sbin/adblock-why
 /usr/sbin/config-backup-mail
+/usr/sbin/dns-guard
 /usr/sbin/duckdns-update
 /usr/sbin/evidence-capture
 /usr/sbin/faultlog

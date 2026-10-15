@@ -7,6 +7,36 @@ EVIDENCE_CAPTURE_CMD=${EVIDENCE_CAPTURE_CMD:-/usr/sbin/evidence-capture}
 STATE=${WAN_WATCH_STATE:-/tmp/wan-watch.state}
 RESOLV=${WAN_WATCH_RESOLV:-/tmp/resolv.conf.d/resolv.conf.auto}
 UPTIME=${WAN_WATCH_UPTIME:-/proc/uptime}
+TCPDNS_STATE=${WAN_WATCH_TCPDNS_STATE:-/tmp/wan-watch-tcpdns.state}
+DIG_CMD=${DIG_CMD:-dig}
+tcp_dns_probe() {
+  [ "$upstream" -eq 1 ] && [ -n "$dns_server" ] || return 0
+  command -v "$DIG_CMD" >/dev/null 2>&1 || return 0
+  tcp_output=$("$DIG_CMD" +tcp +time=3 +tries=1 example.com "@$dns_server" 2>&1)
+  if printf '%s\n' "$tcp_output" | grep -Eq 'ID mismatch|expected ID'; then tcp_result=id_mismatch
+  elif printf '%s\n' "$tcp_output" | grep -Eq 'status: [A-Z]+'; then tcp_result=ok
+  elif printf '%s\n' "$tcp_output" | grep -Eiq 'connection timed out|no servers could be reached'; then tcp_result=timeout
+  else tcp_result=error
+  fi
+  tcp_prev=none; tcp_ok=0; tcp_mismatch=0; tcp_timeout=0; tcp_error=0; tcp_lastlog=0
+  [ -r "$TCPDNS_STATE" ] && read -r tcp_prev tcp_ok tcp_mismatch tcp_timeout tcp_error tcp_lastlog < "$TCPDNS_STATE"
+  case "$tcp_ok:$tcp_mismatch:$tcp_timeout:$tcp_error:$tcp_lastlog" in
+    *[!0-9:]*) tcp_ok=0; tcp_mismatch=0; tcp_timeout=0; tcp_error=0; tcp_lastlog=0;;
+  esac
+  case "$tcp_result" in
+    ok) tcp_ok=$((tcp_ok + 1));;
+    id_mismatch) tcp_mismatch=$((tcp_mismatch + 1));;
+    timeout) tcp_timeout=$((tcp_timeout + 1));;
+    error) tcp_error=$((tcp_error + 1));;
+  esac
+  if [ "$tcp_prev" != "$tcp_result" ] || [ "$((now - tcp_lastlog))" -ge 3600 ]; then
+    tcp_level=info
+    [ "$tcp_result" = id_mismatch ] && tcp_level=warn
+    "$FAULTLOG_CMD" wan "$tcp_level" "action=tcp_dns result=$tcp_result ok=$tcp_ok id_mismatch=$tcp_mismatch timeout=$tcp_timeout error=$tcp_error" || :
+    tcp_lastlog=$now
+  fi
+  printf '%s %s %s %s %s %s\n' "$tcp_result" "$tcp_ok" "$tcp_mismatch" "$tcp_timeout" "$tcp_error" "$tcp_lastlog" > "$TCPDNS_STATE" 2>/dev/null || :
+}
 now=$(date +%s)
 bootup=$(cut -d. -f1 "$UPTIME" 2>/dev/null)
 case "$bootup" in ''|*[!0-9]*) bootup=0;; esac
@@ -57,6 +87,7 @@ if [ "$status" = ok ] || [ "$status" = gw_unreachable ]; then
     [ "$prev" = ok ] || "$FAULTLOG_CMD" wan info "action=transition from=$prev to=ok gw=$gw external=$external upstream_dns=$upstream direct_dns=$direct https=$https" || :
   fi
   printf '%s 0 0 ok 0 0 %s 0\n' "$status" "$lastlog" > "$STATE"
+  tcp_dns_probe
   exit 0
 fi
 if [ "$fails" -eq 0 ]; then since=$now; worst=$status; worst_rank=$rank; fi
@@ -81,3 +112,6 @@ if [ "$fails" -ge 3 ] && [ "$notified" -eq 0 ]; then
   notified=1
 fi
 printf '%s %s %s %s %s %s %s %s\n' "$status" "$fails" "$since" "$worst" "$worst_rank" "$notified" "$lastlog" "$captured" > "$STATE"
+state_rc=$?
+tcp_dns_probe
+exit "$state_rc"

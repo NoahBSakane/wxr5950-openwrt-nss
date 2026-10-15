@@ -1,0 +1,99 @@
+#!/bin/sh
+# Check a small, operator-owned list without changing DNS or adblock settings.
+LIST=${DNS_GUARD_LIST:-/etc/dns-guard.list}
+STATE=${DNS_GUARD_STATE:-/tmp/dns-guard.state}
+RESOLV=${DNS_GUARD_RESOLV:-/tmp/resolv.conf.d/resolv.conf.auto}
+UPTIME=${DNS_GUARD_UPTIME:-/proc/uptime}
+NSLOOKUP_CMD=${NSLOOKUP_CMD:-nslookup}
+FAULTLOG_CMD=${FAULTLOG_CMD:-/usr/sbin/faultlog}
+NOTIFY_CMD=${NOTIFY_CMD:-/usr/sbin/notify}
+
+[ -s "$LIST" ] || exit 0
+bootup=$(cut -d. -f1 "$UPTIME" 2>/dev/null)
+case "$bootup" in ''|*[!0-9]*) bootup=0;; esac
+[ "$bootup" -ge 300 ] || exit 0
+now=$(date +%s)
+server=$(awk '$1 == "nameserver" {print $2; exit}' "$RESOLV" 2>/dev/null)
+tmp="${STATE}.$$"
+next="${tmp}.next"
+if [ -r "$STATE" ]; then cp "$STATE" "$tmp" 2>/dev/null || exit 0
+else : > "$tmp" || exit 0
+fi
+trap 'rm -f "$tmp" "$next"' 0 HUP INT TERM
+
+valid_domain() {
+  [ "${#1}" -le 253 ] && printf '%s\n' "$1" | LC_ALL=C grep -Eq '^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$'
+}
+lookup() {
+  if command -v timeout >/dev/null 2>&1; then
+    output=$(timeout 5 "$NSLOOKUP_CMD" "$1" "$2" 2>&1)
+  else
+    output=$("$NSLOOKUP_CMD" "$1" "$2" 2>&1)
+  fi
+  case "$output" in *NXDOMAIN*|*'Non-existent domain'*) printf 'nxdomain\n'; return;; esac
+  if printf '%s\n' "$output" | awk '/^Name:[[:space:]]/ {seen=1; next} seen && /^Address([[:space:]]|[[:digit:]]|:)/ {found=1} END {exit !found}'; then
+    printf 'resolves\n'
+  else
+    printf 'error\n'
+  fi
+}
+record() { "$FAULTLOG_CMD" dnsguard "$1" "$2" || :; }
+count=0
+seen=' '
+changed=0
+while IFS= read -r domain || [ -n "$domain" ]; do
+  case "$domain" in ''|\#*) continue;; esac
+  valid_domain "$domain" || { record warn 'action=invalid_list_entry'; continue; }
+  case "$seen" in *" $domain "*) continue;; esac
+  seen="$seen$domain "
+  count=$((count + 1))
+  if [ "$count" -gt 20 ]; then
+    record warn 'action=limit max=20'
+    break
+  fi
+  old=$(awk -v d="$domain" '$1 == d {print $2, $3; exit}' "$tmp" 2>/dev/null)
+  previous=none; lastlog=0
+  [ -z "$old" ] || read -r previous lastlog <<EOF
+$old
+EOF
+  case "$lastlog" in ''|*[!0-9]*) lastlog=0;; esac
+  local_result=$(lookup "$domain" 127.0.0.1)
+  upstream_result=error
+  [ -n "$server" ] && upstream_result=$(lookup "$domain" "$server")
+  public_result=$(lookup "$domain" 1.1.1.1)
+  result=unknown
+  if [ "$local_result" = resolves ]; then
+    result=ok
+  elif [ "$local_result" = nxdomain ]; then
+    if [ "$upstream_result" = resolves ] || [ "$public_result" = resolves ]; then
+      result=blocked
+    elif [ "$upstream_result" = nxdomain ] && [ "$public_result" = nxdomain ]; then
+      result=nxdomain
+    fi
+  fi
+  [ "$result" = unknown ] && continue
+  if [ "$result" = blocked ]; then
+    if [ "$previous" != blocked ]; then
+      "$NOTIFY_CMD" "$(printf 'DNS block detected\nDomain : %s\nLocal : NXDOMAIN\nUpstream : resolves\nHint : adblock-why %s' "$domain" "$domain")" 4 || :
+      record err "action=blocked domain=$domain"
+      lastlog=$now
+    elif [ "$((now - lastlog))" -ge 86400 ]; then
+      record warn "action=blocked domain=$domain duration=ongoing"
+      lastlog=$now
+    fi
+  elif [ "$result" = ok ] && [ "$previous" = blocked ]; then
+    "$NOTIFY_CMD" "$(printf 'DNS block cleared\nDomain : %s\nLocal : resolves' "$domain")" 3 || :
+    record info "action=cleared domain=$domain"
+    lastlog=$now
+  elif [ "$result" = nxdomain ] && [ "$previous" != nxdomain ]; then
+    record info "action=nxdomain domain=$domain"
+    lastlog=$now
+  fi
+  if [ "$previous" != "$result" ] || [ "$old" != "$result $lastlog" ]; then
+    awk -v d="$domain" '$1 != d' "$tmp" > "$next" || continue
+    printf '%s %s %s\n' "$domain" "$result" "$lastlog" >> "$next"
+    mv -f "$next" "$tmp" && changed=1
+  fi
+done < "$LIST"
+[ "$changed" -eq 0 ] || mv -f "$tmp" "$STATE" 2>/dev/null || :
+exit 0

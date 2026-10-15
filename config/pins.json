@@ -27,7 +27,7 @@
     "builder": {"repo": "JuliusBairaktaris/Qualcommax_NSS_Builder", "sha": "11d8ea6810357f68c0557b0a532ee53f10d40938"},
     "upstream_openwrt": {"repo": "openwrt/openwrt", "sha": "1daf1410c575360bc4ec4896281f0140d528d34d"},
     "feeds": {
-      "packages": {"repo": "openwrt/packages", "url": "https://git.openwrt.org/feed/packages.git", "sha": "6fb711fed018a04030ffae4976030b7079c9a489"},
+      "packages": {"repo": "openwrt/packages", "url": "https://git.openwrt.org/feed/packages.git", "sha": "85f777a20efbff6de19d8dfc65c782a7890818b0"},
       "luci": {"repo": "openwrt/luci", "url": "https://git.openwrt.org/project/luci.git", "sha": "acda1ad6f1e6e9d487cd29f58cf166419826de55"},
       "routing": {"repo": "openwrt/routing", "url": "https://git.openwrt.org/feed/routing.git", "sha": "4b9891b9136259f93294a424507ed24c5e8c1cbd"},
       "telephony": {"repo": "openwrt/telephony", "url": "https://git.openwrt.org/feed/telephony.git", "sha": "5d68d53c160a325ea9d03fce393e051573bcc736"},
@@ -35,6 +35,6 @@
       "nss": {"repo": "JuliusBairaktaris/nss-packages", "url": "https://github.com/JuliusBairaktaris/nss-packages.git", "sha": "f06e232fb141c3edf19866740639ade0fd9caef7", "ref": "archive/edma-nss-final"}
     },
     "kernel": "6.18.55",
-    "versions": {"openssl": "3.5.9", "dnsmasq": "2.93", "hostapd": "2026-08-07/831364bf02710ad09c2f27d3efa92abeeb5634c0", "tailscale": "1.102.3", "curl": "8.22.0"}
+    "versions": {"openssl": "3.5.9", "dnsmasq": "2.93", "hostapd": "2026-08-07/831364bf02710ad09c2f27d3efa92abeeb5634c0", "tailscale": "1.104.1", "curl": "8.22.0"}
   }
 }
